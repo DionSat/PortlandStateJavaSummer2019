@@ -22,4 +22,24 @@ public class StudentTest
     assertThat(pat.getName(), equalTo(name));
   }
 
+  @Test(expected = NullPointerException.class)
+  public void whenNameIsNullThrowANullPointerException() {
+    String name = null;
+    createStudentNamed(name);
+  }
+
+  private Student createStudentNamed(String name) {
+    return new Student(name, new ArrayList<>(), 0.0, "Doesn't matter");
+  }
+
+  // Test that you cant create a student without a name
+
+  //When the GPA is not a valid double, exit with an error message saying that the GPA must be a decimal
+
+  //When then there are not enough command line arguments, exit with as error message
+
+  //When GPA is less than zero, issue a "range error"
+
+  //When GPA is greater than 4.0, issue a "range error"
+
 }
