@@ -38,6 +38,12 @@ public class StudentTest
       new Student("name", new ArrayList<>(), gpa, "");
   }
 
+  @Test(expected = GPAOutOfBoundsException.class)
+  public void whenGPAIsGreaterThanFourThrowGPAOutOfBoundsException() {
+      double gpa = 4.1;
+      new Student("name", new ArrayList<>(), gpa, "");
+  }
+
   //When the GPA is not a valid double, exit with an error message saying that the GPA must be a decimal
 
   //When then there are not enough command line arguments, exit with as error message
