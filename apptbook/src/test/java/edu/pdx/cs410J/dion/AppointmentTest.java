@@ -13,19 +13,19 @@ public class AppointmentTest {
   //(expected = UnsupportedOperationException.class)
   @Test
   public void getBeginTimeStringNeedsToBeImplemented() {
-    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02");
+    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02", "am", "pm");
     appointment.getBeginTimeString();
   }
 
   @Test
   public void initiallyAllAppointmentsHaveTheSameDescription() {
-    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02");
+    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02", "am", "pm");
     assertThat(appointment.getDescription(), containsString("Nothing Important"));
   }
 
   @Test
   public void forProject1ItIsOkayIfGetBeginTimeReturnsNull() {
-    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02");
+    Appointment appointment = new Appointment("Nothing Important", "4:01", "4:02", "am", "pm");
     assertThat(appointment.getBeginTime(), is(nullValue()));
   }
 

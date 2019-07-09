@@ -1,6 +1,10 @@
 package edu.pdx.cs410J.dion;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
 
 /**
  * The main class for the CS410J appointment book Project
@@ -8,20 +12,22 @@ import java.util.regex.Pattern;
 public class Project1 {
 
   public static void main(String[] args) {
+    //
     String owner = null;
     String startTime = null;
     String endTime = null;
     String description = null;
     boolean descriptionFlag = false;
-    boolean print = false;
+    boolean printFlag = false;
 
     String[] cmdArg = parseText(args);
+    printFlag = checkPrintOption(args);
 
-    Appointment appointment = new Appointment(description, startTime, endTime);
-    AppointmentBook appointmentBook = new AppointmentBook(owner);
+    Appointment appointment = new Appointment(cmdArg[1], cmdArg[2], cmdArg[3], cmdArg[4], cmdArg[5]);
+    AppointmentBook appointmentBook = new AppointmentBook(cmdArg[0]);
     System.exit(1);
 
-    if(print) {
+    if(printFlag) {
       System.out.println(appointmentBook.toString());
       System.out.println(appointment.toString());
     }
@@ -56,13 +62,36 @@ public class Project1 {
     String endTime = null;
     String endDate = null;
     String description = null;
+    String startDay = null;
+    String endDay = null;
+    Integer quoteCount = 0;
     //A flag that stops depending on whether the delimiter or token has been found
     boolean descriptionFlag = false;
     //Flag for checking the first assignment to description
     boolean descriptionTrigger = false;
+    //A flag that stops depending on whether the delimiter or token has been found
+    boolean ownerFlag = false;
+    //Flag for checking the first assignment to owner
+    boolean ownerTrigger = false;
     boolean exitFlag = false;
     boolean print = false;
 
+    /*
+    Check if the command line arguments have multiple quotes or more than one
+    Argument should only have one quote for the owner name only.
+     */
+    for(String arg: args) {
+      if(quoteCount > 1) {
+        System.err.println("Invalid Name format(Ex: \"first lastname\")!");
+        System.exit(3);
+      }
+      if(arg.endsWith("\"")) {
+        quoteCount++;
+      }
+    }
+    /*
+    Check if the command line argument is empty in which case print an error message and exit
+     */
     for(String arg : args) {
       if(arg == null) {
         return commandArg;
@@ -70,8 +99,8 @@ public class Project1 {
     }
 
     //Check if the command argument is empty
-    if(args.length == 0) {
-      System.err.println("Missing command line arguments");
+    if(args.length < 2) {
+      System.err.println("Missing command line arguments!");
       System.exit(1);
     }
 
@@ -82,41 +111,41 @@ public class Project1 {
         break;
       }
 
-      else if(arg.startsWith("-print")) {
+      if (arg.startsWith("-print")) {
         print = true;
       }
 
-      else if(owner == null) {
+      else if(!ownerFlag) {
+        //Had to add quotes to the owners field because it wasn't reading them
+        arg = "\"" + arg + "\"";
         if(isNumeric(arg)) {
           System.err.println("Invalid name type!");
           exitFlag = true;
           break;
         }
-        owner = arg;
+        if(!ownerTrigger) {
+          owner = arg;
+          ownerTrigger = true;
+        }
+        else {
+          owner += " " + arg;
+        }
+        if(arg.endsWith("\"")) {
+          ownerFlag = true;
+        }
       }
 
       else if(descriptionFlag == false) {
         if(descriptionTrigger == false) {
-          /*if(isNumeric(arg)) {
-            System.err.println("Invalid description type!");
-            exitFlag = true;
-            break;
-          }*/
           description = arg;
           descriptionTrigger = true;
         }
         else {
-          /*if(isNumeric(arg)) {
-            System.err.println("Invalid description type!");
-            exitFlag = true;
-            break;
-          }*/
           description += " " + arg;
         }
         if(arg.contains(".") || arg.contains("?") || arg.contains("!")) {
           descriptionFlag = true;
         }
-        //description = arg;
       }
 
       else if(startDate == null) {
@@ -127,6 +156,10 @@ public class Project1 {
         startTime = arg;
       }
 
+      else if(startDay == null) {
+        startDay = arg;
+      }
+
       else if(endDate == null) {
         endDate = arg;
       }
@@ -134,17 +167,21 @@ public class Project1 {
       else if(endTime == null) {
         endTime = arg;
       }
+
+      else if(endDay == null) {
+        endDay = arg;
+      }
     }
 
     if(!exitFlag) {
-      checkCommandArgument(owner, description, startDate, startTime, endDate, endTime);
+      checkCommandArgument(owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
 
       commandArg[0] = owner;
       commandArg[1] = description;
-      commandArg[2] = startDate;
-      commandArg[3] = startTime;
-      commandArg[4] = endDate;
-      commandArg[5] = endTime;
+      commandArg[2] = startDate + " " + startTime;
+      commandArg[3] = endDate + " " + endTime;
+      commandArg[4] = endDay;
+      commandArg[5] = startDay;
 
       return commandArg;
     }
@@ -153,50 +190,79 @@ public class Project1 {
     }
   }
 
-  static boolean checkFormat(String startDate, String startTime, String endDate, String endTime) {
-    boolean isValid = false;
-    //
-    String regEx = "^([1-9]|([012][0-9])|(3[01]))-([0]{0,1}[1-9]|1[012])-\\d\\d\\d\\d [012]{0,1}[0-9]:[0-6][0-9]$";
-    //^([1-9]|([012][0-9])|(3[01]))-([0]{0,1}[1-9]|1[012])-\d\d\d\d [012]{0,1}[0-9]:[0-6][0-9]$
-    Pattern p = Pattern.compile(regEx);
-    /*if((startDate + " " + startTime).matches(regEx) && (endDate + " " + endTime).matches(regEx)) {
-      isValid = true;
-    }*/
-    if(p.matcher(startDate + " " + startTime).find() && p.matcher(endDate + " " + endTime).find()) {
-      isValid = true;
+    static boolean checkFormat(String regEx, String date, String time) {
+      boolean isValid = false;
+      Pattern p = Pattern.compile(regEx);
+      if(p.matcher(date + " " + time).find()) {
+        isValid = true;
+      }
+      return isValid;
     }
-    return isValid;
-  }
 
-  static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime) {
+  static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
+    //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
+    String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
+    String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
+
     if(owner.equals(null)) {
       System.err.print("Missing owner field!");
       System.exit(3);
     }
-    else if(description.equals(null)) {
+    else if(description == null) {
       System.err.print("Missing description field!");
       System.exit(3);
     }
-    else if(startDate.equals(null)) {
+    else if(startDate == null) {
       System.err.print("Missing beginDate field!");
       System.exit(3);
     }
-    else if(startTime.equals(null)) {
+    else if(startTime == null) {
       System.err.print("Missing beginTime field!");
       System.exit(3);
     }
-    else if(endDate.equals(null)) {
+    else if(startDay == null) {
+      System.err.print("Missing beginning am/pm field!");
+      System.exit(3);
+    }
+    else if(!checkDay(ampm, startDay)) {
+      System.err.print("Invalid beginning am/pm field!");
+      System.exit(3);
+    }
+    else if(endDate == null) {
       System.err.print("Missing endDate field");
       System.exit(3);
     }
-    else if(endTime.equals(null)) {
+    else if(endTime == null) {
       System.err.print("Missing endTime field");
       System.exit(3);
     }
-    if(!checkFormat(startDate, startTime, endDate, endTime)) {
-      System.err.println("Invalid date format!");
+    else if(endDay == null) {
+      System.err.print("Missing ending am/pm field!");
       System.exit(3);
     }
+    else if(!checkDay(ampm, endDay)) {
+      System.err.print("Invalid ending am/pm field!");
+      System.exit(3);
+    }
+    if(!checkFormat(regEx, startDate, startTime)) {
+      System.err.println("Invalid Start date/time format!");
+      System.exit(3);
+    }
+    if(!checkFormat(regEx, endDate, endTime)) {
+      System.err.println("Invalid End date/time format!");
+      System.exit(3);
+    }
+  }
+
+  public static boolean checkPrintOption(String[] args) {
+    boolean print = false;
+    for (String arg : args) {
+      if (arg.startsWith("-print")) {
+        print = true;
+        break;
+      }
+    }
+    return print;
   }
 
   public static boolean isNumeric(String strNum) {
@@ -206,6 +272,36 @@ public class Project1 {
       return false;
     }
     return true;
+  }
+
+  public static boolean checkDay(String[] arr, String ampm) {
+    boolean isValid = false;
+    for(String element : arr) {
+      if(ampm.equals(element)) {
+        isValid = true;
+      }
+    }
+    return isValid;
+  }
+
+  public static Date ConvertDateAndTime(String date, String time) {
+    //Displaying given time in 12 hour format with AM/PM
+    SimpleDateFormat sdf4 = null;
+    Date date4 = null;
+    String dateString = date + " " + time;
+    //old format
+    SimpleDateFormat sdf3 = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    try{
+      date4 = sdf3.parse(dateString);
+    }catch(ParseException e){
+      e.printStackTrace();
+    }
+    return date4;
+  }
+
+  public static void PrintDateAndTime(Date toPrint, String ampm) {
+    SimpleDateFormat sdf4 = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+    System.out.println("Given date and time in AM/PM: "+sdf4.format(toPrint) + " " + ampm);
   }
 
 }
