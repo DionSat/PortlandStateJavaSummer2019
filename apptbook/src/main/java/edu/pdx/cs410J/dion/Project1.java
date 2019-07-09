@@ -20,12 +20,11 @@ public class Project1 {
     boolean descriptionFlag = false;
     boolean printFlag = false;
 
-    String[] cmdArg = parseText(args);
     printFlag = checkPrintOption(args);
+    String[] cmdArg = parseText(args);
 
     Appointment appointment = new Appointment(cmdArg[1], cmdArg[2], cmdArg[3], cmdArg[4], cmdArg[5]);
     AppointmentBook appointmentBook = new AppointmentBook(cmdArg[0]);
-    System.exit(1);
 
     if(printFlag) {
       System.out.println(appointmentBook.toString());
