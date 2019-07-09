@@ -19,10 +19,6 @@ public class Project1Test {
         Project1.printReadme();
     }
 
-    @Test
-    public void checkOptionPrintForArgumentParsing() {
-        String[] toPrint = Project1.parseText(new String[]{"-README"});
-    }
 
     @Test
     public void checkPrintForReadMeStopsProcess() {
@@ -40,7 +36,7 @@ public class Project1Test {
         }
     }
 
-    @Test
+    /*@Test
     public void checkSentenceDescriptionForArgumentParsing() {
         String[] toPrint = Project1.parseText(new String[]{"\"Bill Harrington\"", "This", "is", "a", "good", "program.", "01-12-2011", "19:20", "am", "01-13-2011", "14:11", "am"});
         for(String arg : toPrint) {
@@ -54,9 +50,9 @@ public class Project1Test {
         for(String arg : toPrint) {
             System.out.println(arg);
         }
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void checkNullDates() {
         String[] toPrint = Project1.parseText(new String[]{"Bill", "This", "is", "a", "good", "program.", null, "19:20", "am",  "01-13-2011", "14:11", "am"});
         for(String arg : toPrint) {
@@ -102,7 +98,7 @@ public class Project1Test {
         for(String arg : toPrint) {
             System.out.println(arg);
         }
-    }
+    }*/
 
     @Test
     public void checkInvalidDay() {
