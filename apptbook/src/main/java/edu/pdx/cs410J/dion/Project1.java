@@ -7,7 +7,10 @@ import java.util.Date;
 import java.text.ParseException;
 
 /**
- * The main class for the CS410J appointment book Project
+ * The main class for the CS410J appointment book Project.
+ * This class handles and implements the command argument parsing and options
+ * @author Dion Satcher
+ * @version 1 7/10/2019
  */
 public class Project1 {
 
@@ -34,6 +37,10 @@ public class Project1 {
     System.exit(1);
   }
 
+  /**
+   * A void function that prints the read me when called
+   * @return there is no return type
+   */
   static void printReadme() {
     System.out.println("\n\n");
     System.out.println("Project 1 README Dion Satcher, CS410J " +
@@ -53,6 +60,14 @@ public class Project1 {
         "\n***END OF README***\n");
   }
 
+    /**
+   * This function handles the command line parsing and reads the command line input to sort out the appointment information.
+     * The function then calls a error checking program that will check if a field hasn't been entered or entered correctly.
+     * If the error checking returns then there are no errors and the input will be written in to a string that will be returned.
+   * @param args
+     *      The command line argument passed in from main
+   * @return the command line arguments such as owner, description, etc  in a string array
+   */
   static String[] parseText(String[] args) {
     String commandArg[] = new String[6];
     String owner = null;
@@ -88,6 +103,7 @@ public class Project1 {
         quoteCount++;
       }
     }
+
     /*
     Check if the command line argument is empty in which case print an error message and exit
      */
@@ -189,6 +205,17 @@ public class Project1 {
     }
   }
 
+  /**
+   * This function uses a Regular Expression to check the format of date and time.
+   * It compares the strings to the regEx using pattern matcher.
+   * @param regEx
+   *        A regular expression to compare date and time to.
+   * @param date
+   *        The date that is passed into the function
+   * @param time
+   *        The time that is passed into the function
+   * @return this returns whether the date and time format are valid. True if they they are and false if not.
+   */
     static boolean checkFormat(String regEx, String date, String time) {
       boolean isValid = false;
       Pattern p = Pattern.compile(regEx);
@@ -198,64 +225,103 @@ public class Project1 {
       return isValid;
     }
 
+  /**
+   * This program checks whether all of the arguments have been entered and whether they have been entered correctly.
+   * @param owner
+   *        The owners name
+   * @param description
+   *        Description of the appointment
+   * @param startDate
+   *        The start date of the appointment
+   * @param startTime
+   *        The start time of the appointment
+   * @param endDate
+   *        The end date of the appointment
+   * @param endTime
+   *        The end time of the appointment
+   * @param startDay
+   *        Whether the start time is am or pm
+   * @param endDay
+   *        Whether the end time is am or pm
+   */
   static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
     //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
     String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
+    //array of am/pm strings to compare to
     String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
-    if(owner.equals(null)) {
-      System.err.print("Missing owner field!");
+    //check if owner is present in argument
+    if(owner == null) {
+      System.err.println("Missing owner field!");
       System.exit(3);
     }
+    //check if description is present in argument
     else if(description == null) {
-      System.err.print("Missing description field!");
+      System.err.println("Missing description field!");
       System.exit(3);
     }
+    //check if startDate is present in argument
     else if(startDate == null) {
-      System.err.print("Missing beginDate field!");
+      System.err.println("Missing beginDate field!");
       System.exit(3);
     }
+    //check if startTime is present in argument
     else if(startTime == null) {
-      System.err.print("Missing beginTime field!");
+      System.err.println("Missing beginTime field!");
       System.exit(3);
     }
+    //check if whether the start time, am/pm is present in argument
     else if(startDay == null) {
-      System.err.print("Missing beginning am/pm field!");
+      System.err.println("Missing beginning am/pm field!");
       System.exit(3);
     }
+    //check if start time am/pm is in correct format
     else if(!checkDay(ampm, startDay)) {
-      System.err.print("Invalid beginning am/pm field!");
+      System.err.println("Invalid beginning am/pm field!");
       System.exit(3);
     }
+    //check if end date is present in argument
     else if(endDate == null) {
-      System.err.print("Missing endDate field");
+      System.err.println("Missing endDate field");
       System.exit(3);
     }
+    //check if end time is present in argument
     else if(endTime == null) {
-      System.err.print("Missing endTime field");
+      System.err.println("Missing endTime field");
       System.exit(3);
     }
+    //check if end time am/pm is present in argument
     else if(endDay == null) {
-      System.err.print("Missing ending am/pm field!");
+      System.err.println("Missing ending am/pm field!");
       System.exit(3);
     }
+    //check if end time am/pm is in correct format
     else if(!checkDay(ampm, endDay)) {
-      System.err.print("Invalid ending am/pm field!");
+      System.err.println("Invalid ending am/pm field!");
       System.exit(3);
     }
+    //check if the start date and time are in the correct format
     if(!checkFormat(regEx, startDate, startTime)) {
-      System.err.println("Invalid Start date/time format!");
+      System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm)");
       System.exit(3);
     }
+    //check if the end date and time are in the correct format
     if(!checkFormat(regEx, endDate, endTime)) {
-      System.err.println("Invalid End date/time format!");
+      System.err.println("Invalid End date/time format! (Ex: MM/DD/YYYY hh:mm)");
       System.exit(3);
     }
   }
 
+  /**
+   * This function looks for the print options in the command arguments
+   * @param args
+   *        The whole command argument
+   * @return the boolean value print as true, if print is present or false if not
+   */
   public static boolean checkPrintOption(String[] args) {
     boolean print = false;
     for (String arg : args) {
+      //look for print option
       if (arg.startsWith("-print")) {
         print = true;
         break;
@@ -264,6 +330,12 @@ public class Project1 {
     return print;
   }
 
+  /**
+   * This functions job is check whether a string represents a number or not.
+   * @param strNum
+   *        the string to be checked whether is a number or not
+   * @return return true if the string is a number or false if not
+   */
   public static boolean isNumeric(String strNum) {
     try {
       double d = Double.parseDouble(strNum);
@@ -273,6 +345,14 @@ public class Project1 {
     return true;
   }
 
+  /**
+   * This function compares the am/pm or start and end time to a string of valid am/pm formats and checks whether they match.
+   * @param arr
+   *        the array of valid am/pm examples
+   * @param ampm
+   *        the assumed am/pm string to compare with
+   * @return return isValid as true if the am/pm is valid or false if its not.
+   */
   public static boolean checkDay(String[] arr, String ampm) {
     boolean isValid = false;
     for(String element : arr) {
@@ -283,6 +363,12 @@ public class Project1 {
     return isValid;
   }
 
+  /**
+   * This is for project2 for now im leaving it blank because im not done. I plan on turning all the strings into date objects in project 2.
+   * @param date
+   * @param time
+   * @return
+   */
   public static Date ConvertDateAndTime(String date, String time) {
     //Displaying given time in 12 hour format with AM/PM
     SimpleDateFormat sdf4 = null;
