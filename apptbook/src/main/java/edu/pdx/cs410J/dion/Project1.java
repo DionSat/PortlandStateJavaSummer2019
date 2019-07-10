@@ -98,7 +98,7 @@ public class Project1 {
     }
 
     //Check if the command argument is empty
-    if(args.length < 2) {
+    if(args.length == 0) {
       System.err.println("Missing command line arguments!");
       System.exit(1);
     }
