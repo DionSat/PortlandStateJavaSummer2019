@@ -28,6 +28,7 @@ public class Project1 {
 
     Appointment appointment = new Appointment(cmdArg[1], cmdArg[2], cmdArg[3], cmdArg[4], cmdArg[5]);
     AppointmentBook appointmentBook = new AppointmentBook(cmdArg[0]);
+    appointmentBook.addAppointment(appointment);
 
     if(printFlag) {
       System.out.println(appointmentBook.toString());
