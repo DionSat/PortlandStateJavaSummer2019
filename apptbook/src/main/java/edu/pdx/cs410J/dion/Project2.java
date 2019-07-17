@@ -3,9 +3,7 @@ package edu.pdx.cs410J.dion;
 import edu.pdx.cs410J.ParserException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,26 +19,25 @@ import java.lang.String;
 public class Project2 {
 
     public static void main(String[] args) {
-        //
-        String owner = null;
-        String startTime = null;
-        String endTime = null;
-        String description = null;
-        boolean descriptionFlag = false;
         boolean printFlag = false;
         boolean textFlag = false;
+        boolean readMeFlag = false;
 
         printFlag = checkPrintOption(args);
         textFlag = checkTextFileOption(args);
+        readMeFlag = checkReadMeFileOption(args);
         String[] cmdArg = parseText(args);
+
 
         Appointment appointment = new Appointment(cmdArg[2], cmdArg[3] + " " + cmdArg[6], cmdArg[4] + " " + cmdArg[5]);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
         appointmentBook.addAppointment(appointment);
 
-        if(printFlag) {
-            System.out.println(appointmentBook.toString());
-            System.out.println(appointment.toString());
+        if(!readMeFlag) {
+            if (printFlag) {
+                System.out.println(appointmentBook.toString());
+                System.out.println(appointment.toString());
+            }
         }
 
         if(textFlag && cmdArg[0] != null) {
@@ -58,7 +55,7 @@ public class Project2 {
                 System.exit(1);
             }
 
-            if (cmdArg[1] == parsedAppointment.getOwnerName()) {
+            if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                 parsedAppointment.addAppointment(appointment);
 
                 textDumper.dump(parsedAppointment);
@@ -85,7 +82,8 @@ public class Project2 {
         System.out.println("\n\n");
         System.out.println("Project 1 README Dion Satcher, CS410J " +
                 "\nThis program will allow user to enter appointment information" +
-                "\non the command line, then saves the information." +
+                "\non the command line, then saves the information. This program" +
+                "\n will allow you to write that information to a text file." +
                 "\n---------------" +
                 "\nusage: java edu.pdx.edu.cs410J.<login-id>.Project1 [options] <args>" +
                 "\nargs are (in this order):" +
@@ -96,6 +94,7 @@ public class Project2 {
                 "  options are (options may appear in any order):\n" +
                 "    -print                   Prints a description of the new appointment\n" +
                 "    -README                  Prints a README for this project and exits\n" +
+                "    -textFile                Where to read/write the appointment book\n" +
                 "  Date and time should be in the format: mm/dd/yyyy hh:mm am/pm (or mm/dd/yy hh:mm am/pm)\n" +
                 "\n***END OF README***\n");
     }
@@ -280,13 +279,13 @@ public class Project2 {
      *        The time that is passed into the function
      * @return this returns whether the date and time format are valid. True if they they are and false if not.
      */
-    static boolean checkFormat(String regEx, String date, String time) {
+    private static boolean checkFormat(String regEx, String date, String time) {
         boolean isValid = false;
         Pattern p = Pattern.compile(regEx);
         if(p.matcher(date + " " + time).find()) {
             isValid = true;
         }
-        return isValid;
+        return !isValid;
     }
 
     /**
@@ -308,7 +307,7 @@ public class Project2 {
      * @param endDay
      *        Whether the end time is am or pm
      */
-    static void checkCommandArgument(String filepath, String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
+    private static void checkCommandArgument(String filepath, String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
         //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
         String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
         //array of am/pm strings to compare to
@@ -316,7 +315,8 @@ public class Project2 {
 
         //check if owner is present in argument
         if (filepath == null) {
-            return;
+            System.err.println("No file path specified!");
+            System.exit(3);
         }
         else if(owner.equals("bad")) {
             System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
@@ -347,7 +347,7 @@ public class Project2 {
             System.exit(3);
         }
         //check if start time am/pm is in correct format
-        else if(!checkDay(ampm, startDay)) {
+        else if(checkDay(ampm, startDay)) {
             System.err.println("Invalid beginning am/pm field!");
             System.exit(3);
         }
@@ -367,17 +367,17 @@ public class Project2 {
             System.exit(3);
         }
         //check if end time am/pm is in correct format
-        else if(!checkDay(ampm, endDay)) {
+        else if(checkDay(ampm, endDay)) {
             System.err.println("Invalid ending am/pm field!");
             System.exit(3);
         }
         //check if the start date and time are in the correct format
-        if(!checkFormat(regEx, startDate, startTime)) {
+        if(checkFormat(regEx, startDate, startTime)) {
             System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm)");
             System.exit(3);
         }
         //check if the end date and time are in the correct format
-        if(!checkFormat(regEx, endDate, endTime)) {
+        if(checkFormat(regEx, endDate, endTime)) {
             System.err.println("Invalid End date/time format! (Ex: MM/DD/YYYY hh:mm)");
             System.exit(3);
         }
@@ -389,7 +389,7 @@ public class Project2 {
      *        The whole command argument
      * @return the boolean value print as true, if print is present or false if not
      */
-    public static boolean checkPrintOption(String[] args) {
+    private static boolean checkPrintOption(String[] args) {
         boolean print = false;
         for (String arg : args) {
             //look for print option
@@ -401,16 +401,40 @@ public class Project2 {
         return print;
     }
 
-    public static boolean checkTextFileOption(String[] args) {
-        boolean print = false;
+    /**
+     * This function looks for the textFile option in the command argument
+     * @param args
+     *        The whole command line argument
+     * @return  the boolean value flag as true, if textFile is present or false if not
+     */
+    private static boolean checkTextFileOption(String[] args) {
+        boolean flag = false;
         for (String arg : args) {
             //look for print option
             if (arg.startsWith("-textFile")) {
-                print = true;
+                flag = true;
                 break;
             }
         }
-        return print;
+        return flag;
+    }
+
+    /**
+     * This function looks for the README option in the command argument
+     * @param args
+     *        The whole command line argument
+     * @return  the boolean value flag as true, if README is present or false if not
+     */
+    private static boolean checkReadMeFileOption(String[] args) {
+        boolean flag = false;
+        for (String arg : args) {
+            //look for print option
+            if (arg.startsWith("-README")) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 
     /**
@@ -419,9 +443,9 @@ public class Project2 {
      *        the string to be checked whether is a number or not
      * @return return true if the string is a number or false if not
      */
-    public static boolean isNumeric(String strNum) {
+    private static boolean isNumeric(String strNum) {
         try {
-            double d = Double.parseDouble(strNum);
+            Double.parseDouble(strNum);
         } catch (NumberFormatException | NullPointerException nfe) {
             return false;
         }
@@ -436,14 +460,14 @@ public class Project2 {
      *        the assumed am/pm string to compare with
      * @return return isValid as true if the am/pm is valid or false if its not.
      */
-    public static boolean checkDay(String[] arr, String ampm) {
+    private static boolean checkDay(String[] arr, String ampm) {
         boolean isValid = false;
         for(String element : arr) {
             if(ampm.equals(element)) {
                 isValid = true;
             }
         }
-        return isValid;
+        return !isValid;
     }
 
     /**

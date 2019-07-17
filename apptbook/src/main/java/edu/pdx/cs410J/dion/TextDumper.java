@@ -5,14 +5,29 @@ import java.io.*;
 import java.util.*;
 import java.io.File;
 
+/**
+ * This class will handle dumping/writing to a text file specified on the command line argument.
+ * It is the child of the AppointmentBookDumper
+ */
 public class TextDumper implements AppointmentBookDumper {
     private String filename;
-    FileOutputStream os = null;
+    private FileOutputStream os = null;
 
-    public TextDumper(String filename) {
+    /**
+     * This is a constructor for the TextParser class
+     * @param filename
+     *        File path name
+     */
+    TextDumper(String filename) {
         this.filename = filename;
     }
 
+    /**
+     * Function to write to the text file specified by the fileName.
+     * @return  returns an appointmentBook of appointments from the text file.
+     * @param appointment
+     *        an appointment
+     */
     @Override
     public void dump(AbstractAppointmentBook appointment) {
         String content;

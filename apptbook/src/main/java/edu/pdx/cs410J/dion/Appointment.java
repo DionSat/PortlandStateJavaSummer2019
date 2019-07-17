@@ -21,10 +21,6 @@ public class Appointment extends AbstractAppointment {
    *        the beginning time passed in
    * @param newEndTime
    *        the ending time passed in
-   * @param newBeginDay
-   *        whether the beginning time is am/pm
-   * @param newEndDay
-   *        whether the beginning time is am/pm
    */
   public Appointment(String newDescription, String newBeginTime, String newEndTime) {
     this.description = newDescription;
