@@ -10,8 +10,8 @@ public class Appointment extends AbstractAppointment {
   private String beginTime;
   private String endTime;
   private String description;
-  private String beginDay;
-  private String endDay;
+  //private String beginDay;
+  //private String endDay;
 
   /**
    * Function to instantiate the Appointment class
@@ -26,12 +26,12 @@ public class Appointment extends AbstractAppointment {
    * @param newEndDay
    *        whether the beginning time is am/pm
    */
-  public Appointment(String newDescription, String newBeginTime, String newEndTime, String newBeginDay, String newEndDay) {
+  public Appointment(String newDescription, String newBeginTime, String newEndTime) {
     this.description = newDescription;
     this.beginTime = newBeginTime;
-    this.beginDay = newBeginDay;
+    //this.beginDay = newBeginDay;
     this.endTime = newEndTime;
-    this.endDay = newEndDay;
+    //this.endDay = newEndDay;
   }
 
   /**
@@ -41,7 +41,13 @@ public class Appointment extends AbstractAppointment {
   @Override
   public String getBeginTimeString() {
     //throw new UnsupportedOperationException("This method is not implemented yet");
-    return beginTime + " " + beginDay;
+    //return beginTime + " " + beginDay;
+    return beginTime;
+  }
+
+  public void setBeginTimeString(int beginTime, int beginDay) {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    this.beginTime = beginTime + " " + beginDay;
   }
 
   /**
@@ -51,7 +57,13 @@ public class Appointment extends AbstractAppointment {
   @Override
   public String getEndTimeString() {
     //throw new UnsupportedOperationException("This method is not implemented yet");
-    return endTime + " " + endDay;
+    //return endTime + " " + endDay;
+    return endTime;
+  }
+
+  public void setEndTimeString(int endTime, int endDay) {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    this.endTime = endTime + " " + endDay;
   }
 
   /**

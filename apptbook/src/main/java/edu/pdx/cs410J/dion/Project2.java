@@ -1,10 +1,16 @@
 package edu.pdx.cs410J.dion;
 
+import edu.pdx.cs410J.ParserException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.text.ParseException;
+import java.lang.String;
 
 /**
  * The main class for the CS410J appointment book Project.
@@ -22,17 +28,50 @@ public class Project2 {
         String description = null;
         boolean descriptionFlag = false;
         boolean printFlag = false;
+        boolean textFlag = false;
 
         printFlag = checkPrintOption(args);
+        textFlag = checkTextFileOption(args);
         String[] cmdArg = parseText(args);
 
-        Appointment appointment = new Appointment(cmdArg[1], cmdArg[2], cmdArg[3], cmdArg[4], cmdArg[5]);
-        AppointmentBook appointmentBook = new AppointmentBook(cmdArg[0]);
+        Appointment appointment = new Appointment(cmdArg[2], cmdArg[3] + " " + cmdArg[6], cmdArg[4] + " " + cmdArg[5]);
+        AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
         appointmentBook.addAppointment(appointment);
 
         if(printFlag) {
             System.out.println(appointmentBook.toString());
             System.out.println(appointment.toString());
+        }
+
+        if(textFlag && cmdArg[0] != null) {
+            TextParser textParser = new TextParser(cmdArg[0]);
+            TextDumper textDumper = new TextDumper(cmdArg[0]);
+            AppointmentBook parsedAppointment = new AppointmentBook(cmdArg[1]);
+
+            try {
+                parsedAppointment = (AppointmentBook) textParser.parse();
+            } catch (ParserException e) {
+                System.out.println(e);
+            }
+
+            if(parsedAppointment == null) {
+                System.exit(1);
+            }
+
+            if (cmdArg[1] == parsedAppointment.getOwnerName()) {
+                parsedAppointment.addAppointment(appointment);
+
+                textDumper.dump(parsedAppointment);
+            } else {
+                File file = new File(cmdArg[0]);
+                if (!file.exists()) {
+                    appointmentBook.addAppointment(appointment);
+                    System.out.println("Owner does not exist in the file");
+                } else {
+                    //appointmentBook.addAppointment(appointment);
+                    textDumper.dump(appointmentBook);
+                }
+            }
         }
 
         System.exit(1);
@@ -70,7 +109,7 @@ public class Project2 {
      * @return the command line arguments such as owner, description, etc  in a string array
      */
     static String[] parseText(String[] args) {
-        String commandArg[] = new String[6];
+        String commandArg[] = new String[7];
         String owner = null;
         String startTime = null;
         String startDate = null;
@@ -80,6 +119,8 @@ public class Project2 {
         String startDay = null;
         String endDay = null;
         Integer quoteCount = 0;
+        boolean textFlag = false;
+        String filePath = null;
         //A flag that stops depending on whether the delimiter or token has been found
         boolean descriptionFlag = false;
         //Flag for checking the first assignment to description
@@ -105,6 +146,9 @@ public class Project2 {
             }
         }
 
+
+
+
     /*
     Check if the command line argument is empty in which case print an error message and exit
      */
@@ -127,13 +171,31 @@ public class Project2 {
                 break;
             }
 
-            if (arg.startsWith("-print")) {
+            else if (arg.startsWith("-textFile") && !textFlag) {
+                textFlag = true;
+            }
+
+            else if (arg.startsWith("-print")) {
                 print = true;
+            }
+
+            else if (textFlag && filePath == null) {
+                if(arg.contains("\"")) {
+                    filePath = null;
+                    break;
+                }
+                else {
+                    filePath = arg;
+                }
             }
 
             else if(!ownerFlag) {
                 //Had to add quotes to the owners field because it wasn't reading them
-                arg = "\"" + arg + "\"";
+                if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
+                    owner = "bad";
+                    exitFlag = true;
+                    break;
+                }
                 if(isNumeric(arg)) {
                     System.err.println("Invalid name type!");
                     exitFlag = true;
@@ -190,14 +252,15 @@ public class Project2 {
         }
 
         if(!exitFlag) {
-            checkCommandArgument(owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
+            checkCommandArgument(filePath, owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
 
-            commandArg[0] = owner;
-            commandArg[1] = description;
-            commandArg[2] = startDate + " " + startTime;
-            commandArg[3] = endDate + " " + endTime;
-            commandArg[4] = endDay;
-            commandArg[5] = startDay;
+            commandArg[0] = filePath;
+            commandArg[1] = owner;
+            commandArg[2] = description;
+            commandArg[3] = startDate + " " + startTime;
+            commandArg[4] = endDate + " " + endTime;
+            commandArg[5] = endDay;
+            commandArg[6] = startDay;
 
             return commandArg;
         }
@@ -245,14 +308,21 @@ public class Project2 {
      * @param endDay
      *        Whether the end time is am or pm
      */
-    static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
+    static void checkCommandArgument(String filepath, String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
         //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
         String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
         //array of am/pm strings to compare to
         String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
         //check if owner is present in argument
-        if(owner == null) {
+        if (filepath == null) {
+            return;
+        }
+        else if(owner.equals("bad")) {
+            System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
+            System.exit(3);
+        }
+        else if(owner == null) {
             System.err.println("Missing owner field!");
             System.exit(3);
         }
@@ -324,6 +394,18 @@ public class Project2 {
         for (String arg : args) {
             //look for print option
             if (arg.startsWith("-print")) {
+                print = true;
+                break;
+            }
+        }
+        return print;
+    }
+
+    public static boolean checkTextFileOption(String[] args) {
+        boolean print = false;
+        for (String arg : args) {
+            //look for print option
+            if (arg.startsWith("-textFile")) {
                 print = true;
                 break;
             }

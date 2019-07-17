@@ -32,6 +32,10 @@ public class AppointmentBook extends AbstractAppointmentBook {
         return owner;
     }
 
+    public void setOwnerName(String owner) {
+        this.owner = owner;
+    }
+
     /**
      * Function to return the appointment
      * @return returns appointment object
