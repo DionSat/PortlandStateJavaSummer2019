@@ -192,7 +192,7 @@ public class Project2 {
                 //Had to add quotes to the owners field because it wasn't reading them
                 if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
                     owner = "bad";
-                    exitFlag = true;
+                    //exitFlag = true;
                     break;
                 }
                 if(isNumeric(arg)) {
@@ -314,12 +314,12 @@ public class Project2 {
         String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
         //check if owner is present in argument
-        if (filepath == null) {
-            System.err.println("No file path specified!");
+        if(owner.equals("bad")) {
+            System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
             System.exit(3);
         }
-        else if(owner.equals("bad")) {
-            System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
+        else if (filepath == null) {
+            System.err.println("No file path specified!");
             System.exit(3);
         }
         else if(owner == null) {
