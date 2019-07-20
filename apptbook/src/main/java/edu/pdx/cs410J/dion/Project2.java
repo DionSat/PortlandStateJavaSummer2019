@@ -179,7 +179,8 @@ public class Project2 {
             }
 
             else if (textFlag && filePath == null) {
-                if(arg.contains("\"")) {
+                File f = new File(arg);
+                if(!f.isFile()) {
                     filePath = null;
                     break;
                 }
@@ -190,11 +191,12 @@ public class Project2 {
 
             else if(!ownerFlag) {
                 //Had to add quotes to the owners field because it wasn't reading them
-                if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
+                arg = "\"" + arg + "\"";
+                /*if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
                     owner = "bad";
                     //exitFlag = true;
                     break;
-                }
+                }*/
                 if(isNumeric(arg)) {
                     System.err.println("Invalid name type!");
                     exitFlag = true;
@@ -314,11 +316,11 @@ public class Project2 {
         String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
         //check if owner is present in argument
-        if(owner.equals("bad")) {
+        /*if(owner.equals("bad")) {
             System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
             System.exit(3);
-        }
-        else if (filepath == null) {
+        }*/
+        if (filepath == null) {
             System.err.println("No file path specified!");
             System.exit(3);
         }
