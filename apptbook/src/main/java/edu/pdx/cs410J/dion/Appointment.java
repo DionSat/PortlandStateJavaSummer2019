@@ -41,9 +41,9 @@ public class Appointment extends AbstractAppointment {
     return beginTime;
   }
 
-  public void setBeginTimeString(int beginTime, int beginDay) {
+  public void setBeginTimeString(String beginTime) {
     //throw new UnsupportedOperationException("This method is not implemented yet");
-    this.beginTime = beginTime + " " + beginDay;
+    this.beginTime = beginTime;
   }
 
   /**
@@ -57,9 +57,9 @@ public class Appointment extends AbstractAppointment {
     return endTime;
   }
 
-  public void setEndTimeString(int endTime, int endDay) {
+  public void setEndTimeString(String endTime) {
     //throw new UnsupportedOperationException("This method is not implemented yet");
-    this.endTime = endTime + " " + endDay;
+    this.endTime = endTime;
   }
 
   /**
