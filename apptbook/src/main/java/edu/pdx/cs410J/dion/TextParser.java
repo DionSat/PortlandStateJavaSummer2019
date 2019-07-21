@@ -37,9 +37,8 @@ public class TextParser implements AppointmentBookParser {
     public AbstractAppointmentBook parse() throws ParserException {
         BufferedReader br = null;
         File file = new File(fileName);
-        if(!file.exists() && fileName.endsWith(".txt")) {
-            System.err.println("Error cannot find file specified on path or filepath has no specified text file!");
-            appointmentBook = null;
+        if(!file.exists() && !fileName.endsWith(".txt")) {
+            appointmentBook = new AppointmentBook("no owner");
         }
         else {
             try {
@@ -47,6 +46,33 @@ public class TextParser implements AppointmentBookParser {
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     String[] app = line.split(";");
+                    if(!line.contains(";")) {
+                        System.err.println("Malformed text file!");
+                    }
+                    if(line == null){
+                        System.err.println("Empty file!");
+                        System.exit(1);
+                    }
+                    if(app[0] == null || !app[0].startsWith("\"") && !app[0].endsWith("\"")){
+                        System.err.println("Malformed owner!");
+                        System.exit(1);
+                    }
+                    if(app[1] == null){
+                        System.err.println("Description is empty!");
+                        System.exit(1);
+                    }
+                    if(app[2] == null){
+                        System.err.println("Start date/time in text empty!");
+                        System.exit(1);
+                    }
+                    if(app[3] == null){
+                        System.err.println("End date/time in text empty!");
+                        System.exit(1);
+                    }
+                    if(app.length > 4){
+                        System.err.println("Too many arguments. Malformed!");
+                        System.exit(1);
+                    }
                     appointmentBook.setOwnerName(app[0]);
                     if(checkFormat(app[2]) && checkFormat(app[3])) {
                         Appointment appointment = new Appointment(app[1], app[2], app[3]);

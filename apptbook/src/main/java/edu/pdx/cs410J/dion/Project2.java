@@ -3,6 +3,7 @@ package edu.pdx.cs410J.dion;
 import edu.pdx.cs410J.ParserException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
@@ -26,8 +27,12 @@ public class Project2 {
         printFlag = checkPrintOption(args);
         textFlag = checkTextFileOption(args);
         readMeFlag = checkReadMeFileOption(args);
-        String[] cmdArg = parseText(args);
 
+        if(readMeFlag) {
+            printReadme();
+            System.exit(2);
+        }
+        String[] cmdArg = parseText(args);
 
         Appointment appointment = new Appointment(cmdArg[2], cmdArg[3], cmdArg[4]);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
@@ -51,9 +56,9 @@ public class Project2 {
                 System.out.println(e);
             }
 
-            if(parsedAppointment == null) {
+            /*if(parsedAppointment == null) {
                 System.exit(1);
-            }
+            }*/
 
             if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                 parsedAppointment.addAppointment(appointment);
@@ -119,6 +124,7 @@ public class Project2 {
         String endDay = null;
         Integer quoteCount = 0;
         boolean textFlag = false;
+        boolean filePathFlag = true;
         String filePath = null;
         //A flag that stops depending on whether the delimiter or token has been found
         boolean descriptionFlag = false;
@@ -164,13 +170,7 @@ public class Project2 {
         }
 
         for (String arg : args) {
-            if(arg.startsWith("-README")) {
-                printReadme();
-                exitFlag = true;
-                break;
-            }
-
-            else if (arg.startsWith("-textFile") && !textFlag) {
+            if (arg.startsWith("-textFile") && !textFlag) {
                 textFlag = true;
             }
 
@@ -180,12 +180,25 @@ public class Project2 {
 
             else if (textFlag && filePath == null) {
                 File f = new File(arg);
-                if(!f.isFile()) {
-                    filePath = null;
-                    break;
+                if(!f.isFile() && arg.endsWith(".txt")) {
+                    System.out.println("cannot find file specified on path or filepath has no specified text file. Creating empty appointment and creating new file");
+                    try {
+                        if (f.createNewFile())
+                        {
+                            System.out.println("File is created!");
+                        } else {
+                            System.out.println("File already exists.");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //filePathFlag = false;
                 }
-                else {
+                else if(f.isFile() && arg.endsWith(".txt")) {
                     filePath = arg;
+                }
+                else if(!f.isFile() && !arg.endsWith(".txt")) {
+                    System.err.println("Error no text file specified in command line argument.");
                 }
             }
 
@@ -215,20 +228,26 @@ public class Project2 {
             }
 
             else if(descriptionFlag == false) {
-                if(isValidDate(arg)) {
-                    description = null;
-                    break;
+                if(isValidDate(arg) || arg.contains("/")) {
+                    if(description == null) {
+                        description = null;
+                        break;
+                    }
+                    else {
+                        descriptionFlag = true;
+                        startDate = arg;
+                    }
                 }
                 if(descriptionTrigger == false) {
                     description = arg;
                     descriptionTrigger = true;
                 }
-                else {
+                else if(!descriptionFlag) {
                     description += " " + arg;
                 }
-                if(arg.contains(".") || arg.contains("?") || arg.contains("!")) {
+                /*if(isValidDate(arg)) {
                     descriptionFlag = true;
-                }
+                }*/
             }
 
             else if(startDate == null) {
@@ -251,13 +270,18 @@ public class Project2 {
                 endTime = arg;
             }
 
+            else if(owner != null && description != null && startDate!= null && startTime != null && endDate != null  && endTime != null  && arg != null) {
+                System.err.println("Too many arguments!");
+                System.exit(3);
+            }
+
             /*else if(endDay == null) {
                 endDay = arg;
             }*/
         }
 
         if(!exitFlag) {
-            checkCommandArgument(filePath, owner, description, startDate, startTime, endDate, endTime);
+            checkCommandArgument(owner, description, startDate, startTime, endDate, endTime);
 
             commandArg[0] = filePath;
             commandArg[1] = owner;
@@ -320,7 +344,7 @@ public class Project2 {
      * @param endTime
      *        The end time of the appointment
      */
-    private static void checkCommandArgument(String filepath, String owner, String description, String startDate, String startTime, String endDate, String endTime) {
+    private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime) {
         //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
         //String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
         //array of am/pm strings to compare to
@@ -332,11 +356,10 @@ public class Project2 {
             System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
             System.exit(3);
         }*/
-        if (filepath == null) {
-            System.err.println("No file path specified!");
-            System.exit(3);
-        }
-        else if(owner == null) {
+        /*if (fileFlag == false) {
+            System.out.println("Filepath is not a file or there was no file specified");
+        }*/
+        if(owner == null) {
             System.err.println("Missing owner field!");
             System.exit(3);
         }

@@ -8,15 +8,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Integration tests for the {@link Project1} main class.
+ * Integration tests for the {@link Project2} main class.
  */
 public class Project1IT extends InvokeMainTestCase {
 
   /**
-   * Invokes the main method of {@link Project1} with the given arguments.
+   * Invokes the main method of {@link Project2} with the given arguments.
    */
   private MainMethodResult invokeMain(String... args) {
-    return invokeMain( Project1.class, args );
+    return invokeMain( Project2.class, args );
   }
 
   /**
@@ -29,4 +29,54 @@ public class Project1IT extends InvokeMainTestCase {
     assertThat(result.getTextWrittenToStandardError(), containsString("Missing command line arguments"));
   }
 
+  /**
+   * Tests that the -README command will cause the exit code of 2
+   */
+  @Test
+  public void testReadmeCommand() {
+    MainMethodResult result = invokeMain(Project2.class, "-README");
+    assertThat(result.getExitCode(), equalTo(2));
+  }
+
+  @Test
+  public void missingDescription() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Missing description field!"));
+  }
+
+  @Test
+  public void missingBeginDate() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Missing beginDate field!"));
+  }
+
+  @Test
+  public void missingBeginTime() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description", "5/2/15");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Missing beginTime field!"));
+  }
+
+  @Test
+  public void missingEndDate() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description", "5/2/15", "12:30");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Missing endDate field"));
+  }
+
+  @Test
+  public void missingEndTime() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description", "5/2/15", "12:30", "5/12/2015");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Missing endTime field"));
+  }
+
+  @Test
+  public void IncorrectBeginTimeFormat() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description", "5/215", "12:30", "05/12/2015", "1:00");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm am/pm)"));
+  }
+
+  @Test
+  public void IncorrectEndTimeFormat() {
+    MainMethodResult result = invokeMain(Project2.class, "Owner", "Description", "05/02/2015", "12:30", "5/122015", "1:00");
+    assertThat(result.getTextWrittenToStandardError(), containsString("Invalid End date/time format! (Ex: MM/DD/YYYY hh:mm)"));
+  }
 }
