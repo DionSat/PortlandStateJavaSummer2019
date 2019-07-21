@@ -20,9 +20,9 @@ import java.lang.String;
 public class Project2 {
 
     public static void main(String[] args) {
-        boolean printFlag = false;
-        boolean textFlag = false;
-        boolean readMeFlag = false;
+        boolean printFlag;
+        boolean textFlag;
+        boolean readMeFlag;
 
         printFlag = checkPrintOption(args);
         textFlag = checkTextFileOption(args);
@@ -36,7 +36,6 @@ public class Project2 {
 
         Appointment appointment = new Appointment(cmdArg[2], cmdArg[3], cmdArg[4]);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
-        appointmentBook.addAppointment(appointment);
 
         if(!readMeFlag) {
             if (printFlag) {
@@ -56,21 +55,17 @@ public class Project2 {
                 System.out.println(e);
             }
 
-            /*if(parsedAppointment == null) {
-                System.exit(1);
-            }*/
-
             if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                 parsedAppointment.addAppointment(appointment);
 
                 textDumper.dump(parsedAppointment);
             } else {
                 File file = new File(cmdArg[0]);
-                if (!file.exists()) {
+                if (file.exists()) {
                     appointmentBook.addAppointment(appointment);
-                    System.out.println("Owner does not exist in the file");
+                    System.out.println("Owner is not in file");
                 } else {
-                    //appointmentBook.addAppointment(appointment);
+                    appointmentBook.addAppointment(appointment);
                     textDumper.dump(appointmentBook);
                 }
             }
@@ -192,6 +187,7 @@ public class Project2 {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    filePath = arg;
                     //filePathFlag = false;
                 }
                 else if(f.isFile() && arg.endsWith(".txt")) {
@@ -318,7 +314,7 @@ public class Project2 {
         return !isValid;
     }
 
-    public static boolean isValidDate(String inDate) {
+    private static boolean isValidDate(String inDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateFormat.setLenient(false);
         try {
