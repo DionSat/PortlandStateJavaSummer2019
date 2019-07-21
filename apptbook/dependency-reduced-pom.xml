@@ -42,7 +42,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>edu.pdx.cs410J.dion.Project1</mainClass>
+              <mainClass>edu.pdx.cs410J.dion.Project2</mainClass>
             </manifest>
           </archive>
         </configuration>

@@ -77,7 +77,7 @@ public class AboutStrings {
     @Koan
     public void stringUpperCase() {
         String str = "I am a number one!";
-        assertEquals(str.toUpperCase(), "I AM A NUMBER ONE!");
+            assertEquals(str.toUpperCase(), "I AM A NUMBER ONE!");
     }
 
     @Koan

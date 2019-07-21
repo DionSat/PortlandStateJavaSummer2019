@@ -3,6 +3,7 @@ package edu.pdx.cs410J.dion;
 import edu.pdx.cs410J.ParserException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
@@ -19,19 +20,22 @@ import java.lang.String;
 public class Project2 {
 
     public static void main(String[] args) {
-        boolean printFlag = false;
-        boolean textFlag = false;
-        boolean readMeFlag = false;
+        boolean printFlag;
+        boolean textFlag;
+        boolean readMeFlag;
 
         printFlag = checkPrintOption(args);
         textFlag = checkTextFileOption(args);
         readMeFlag = checkReadMeFileOption(args);
+
+        if(readMeFlag) {
+            printReadme();
+            System.exit(2);
+        }
         String[] cmdArg = parseText(args);
 
-
-        Appointment appointment = new Appointment(cmdArg[2], cmdArg[3] + " " + cmdArg[6], cmdArg[4] + " " + cmdArg[5]);
+        Appointment appointment = new Appointment(cmdArg[2], cmdArg[3], cmdArg[4]);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
-        appointmentBook.addAppointment(appointment);
 
         if(!readMeFlag) {
             if (printFlag) {
@@ -51,21 +55,17 @@ public class Project2 {
                 System.out.println(e);
             }
 
-            if(parsedAppointment == null) {
-                System.exit(1);
-            }
-
             if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                 parsedAppointment.addAppointment(appointment);
 
                 textDumper.dump(parsedAppointment);
             } else {
                 File file = new File(cmdArg[0]);
-                if (!file.exists()) {
+                if (file.exists()) {
                     appointmentBook.addAppointment(appointment);
-                    System.out.println("Owner does not exist in the file");
+                    System.out.println("Owner is not in file");
                 } else {
-                    //appointmentBook.addAppointment(appointment);
+                    appointmentBook.addAppointment(appointment);
                     textDumper.dump(appointmentBook);
                 }
             }
@@ -108,7 +108,7 @@ public class Project2 {
      * @return the command line arguments such as owner, description, etc  in a string array
      */
     static String[] parseText(String[] args) {
-        String commandArg[] = new String[7];
+        String commandArg[] = new String[5];
         String owner = null;
         String startTime = null;
         String startDate = null;
@@ -119,6 +119,7 @@ public class Project2 {
         String endDay = null;
         Integer quoteCount = 0;
         boolean textFlag = false;
+        boolean filePathFlag = true;
         String filePath = null;
         //A flag that stops depending on whether the delimiter or token has been found
         boolean descriptionFlag = false;
@@ -164,13 +165,7 @@ public class Project2 {
         }
 
         for (String arg : args) {
-            if(arg.startsWith("-README")) {
-                printReadme();
-                exitFlag = true;
-                break;
-            }
-
-            else if (arg.startsWith("-textFile") && !textFlag) {
+            if (arg.startsWith("-textFile") && !textFlag) {
                 textFlag = true;
             }
 
@@ -179,22 +174,38 @@ public class Project2 {
             }
 
             else if (textFlag && filePath == null) {
-                if(arg.contains("\"")) {
-                    filePath = null;
-                    break;
-                }
-                else {
+                File f = new File(arg);
+                if(!f.isFile() && arg.endsWith(".txt")) {
+                    System.out.println("cannot find file specified on path or filepath has no specified text file. Creating empty appointment and creating new file");
+                    try {
+                        if (f.createNewFile())
+                        {
+                            System.out.println("File is created!");
+                        } else {
+                            System.out.println("File already exists.");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     filePath = arg;
+                    //filePathFlag = false;
+                }
+                else if(f.isFile() && arg.endsWith(".txt")) {
+                    filePath = arg;
+                }
+                else if(!f.isFile() && !arg.endsWith(".txt")) {
+                    System.err.println("Error no text file specified in command line argument.");
                 }
             }
 
             else if(!ownerFlag) {
                 //Had to add quotes to the owners field because it wasn't reading them
-                if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
+                arg = "\"" + arg + "\"";
+                /*if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
                     owner = "bad";
                     //exitFlag = true;
                     break;
-                }
+                }*/
                 if(isNumeric(arg)) {
                     System.err.println("Invalid name type!");
                     exitFlag = true;
@@ -213,16 +224,26 @@ public class Project2 {
             }
 
             else if(descriptionFlag == false) {
+                if(isValidDate(arg) || arg.contains("/")) {
+                    if(description == null) {
+                        description = null;
+                        break;
+                    }
+                    else {
+                        descriptionFlag = true;
+                        startDate = arg;
+                    }
+                }
                 if(descriptionTrigger == false) {
                     description = arg;
                     descriptionTrigger = true;
                 }
-                else {
+                else if(!descriptionFlag) {
                     description += " " + arg;
                 }
-                if(arg.contains(".") || arg.contains("?") || arg.contains("!")) {
+                /*if(isValidDate(arg)) {
                     descriptionFlag = true;
-                }
+                }*/
             }
 
             else if(startDate == null) {
@@ -233,9 +254,9 @@ public class Project2 {
                 startTime = arg;
             }
 
-            else if(startDay == null) {
+            /*else if(startDay == null) {
                 startDay = arg;
-            }
+            }*/
 
             else if(endDate == null) {
                 endDate = arg;
@@ -245,21 +266,26 @@ public class Project2 {
                 endTime = arg;
             }
 
-            else if(endDay == null) {
-                endDay = arg;
+            else if(owner != null && description != null && startDate!= null && startTime != null && endDate != null  && endTime != null  && arg != null) {
+                System.err.println("Too many arguments!");
+                System.exit(3);
             }
+
+            /*else if(endDay == null) {
+                endDay = arg;
+            }*/
         }
 
         if(!exitFlag) {
-            checkCommandArgument(filePath, owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
+            checkCommandArgument(owner, description, startDate, startTime, endDate, endTime);
 
             commandArg[0] = filePath;
             commandArg[1] = owner;
             commandArg[2] = description;
             commandArg[3] = startDate + " " + startTime;
             commandArg[4] = endDate + " " + endTime;
-            commandArg[5] = endDay;
-            commandArg[6] = startDay;
+            //commandArg[5] = endDay;
+            //commandArg[6] = startDay;
 
             return commandArg;
         }
@@ -288,6 +314,17 @@ public class Project2 {
         return !isValid;
     }
 
+    private static boolean isValidDate(String inDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(inDate.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * This program checks whether all of the arguments have been entered and whether they have been entered correctly.
      * @param owner
@@ -302,27 +339,23 @@ public class Project2 {
      *        The end date of the appointment
      * @param endTime
      *        The end time of the appointment
-     * @param startDay
-     *        Whether the start time is am or pm
-     * @param endDay
-     *        Whether the end time is am or pm
      */
-    private static void checkCommandArgument(String filepath, String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
+    private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime) {
         //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
-        String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
+        //String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
         //array of am/pm strings to compare to
-        String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
+        String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
+        //String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
         //check if owner is present in argument
-        if(owner.equals("bad")) {
+        /*if(owner.equals("bad")) {
             System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
             System.exit(3);
-        }
-        else if (filepath == null) {
-            System.err.println("No file path specified!");
-            System.exit(3);
-        }
-        else if(owner == null) {
+        }*/
+        /*if (fileFlag == false) {
+            System.out.println("Filepath is not a file or there was no file specified");
+        }*/
+        if(owner == null) {
             System.err.println("Missing owner field!");
             System.exit(3);
         }
@@ -341,7 +374,7 @@ public class Project2 {
             System.err.println("Missing beginTime field!");
             System.exit(3);
         }
-        //check if whether the start time, am/pm is present in argument
+        /*//check if whether the start time, am/pm is present in argument
         else if(startDay == null) {
             System.err.println("Missing beginning am/pm field!");
             System.exit(3);
@@ -350,7 +383,7 @@ public class Project2 {
         else if(checkDay(ampm, startDay)) {
             System.err.println("Invalid beginning am/pm field!");
             System.exit(3);
-        }
+        }*/
         //check if end date is present in argument
         else if(endDate == null) {
             System.err.println("Missing endDate field");
@@ -361,7 +394,7 @@ public class Project2 {
             System.err.println("Missing endTime field");
             System.exit(3);
         }
-        //check if end time am/pm is present in argument
+        /*//check if end time am/pm is present in argument
         else if(endDay == null) {
             System.err.println("Missing ending am/pm field!");
             System.exit(3);
@@ -370,10 +403,10 @@ public class Project2 {
         else if(checkDay(ampm, endDay)) {
             System.err.println("Invalid ending am/pm field!");
             System.exit(3);
-        }
+        }*/
         //check if the start date and time are in the correct format
         if(checkFormat(regEx, startDate, startTime)) {
-            System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm)");
+            System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm am/pm)");
             System.exit(3);
         }
         //check if the end date and time are in the correct format

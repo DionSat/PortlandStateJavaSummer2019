@@ -2,8 +2,6 @@ package edu.pdx.cs410J.dion;
 
 import edu.pdx.cs410J.AbstractAppointment;
 
-import java.util.Date;
-
 /**
  * This class will create an appointment and store each component the appointment
  * It is a child of the AbstractAppointment Class
@@ -12,8 +10,8 @@ public class Appointment extends AbstractAppointment {
   private String beginTime;
   private String endTime;
   private String description;
-  private Date beginDay;
-  private Date endDay;
+  //private String beginDay;
+  //private String endDay;
 
   /**
    * Function to instantiate the Appointment class
@@ -24,12 +22,12 @@ public class Appointment extends AbstractAppointment {
    * @param newEndTime
    *        the ending time passed in
    */
-  public Appointment(String newDescription, String newBeginTime, String newEndTime, Date newBeginDay, Date newEndDay) {
+  public Appointment(String newDescription, String newBeginTime, String newEndTime) {
     this.description = newDescription;
     this.beginTime = newBeginTime;
-    this.beginDay = newBeginDay;
+    //this.beginDay = newBeginDay;
     this.endTime = newEndTime;
-    this.endDay = newEndDay;
+    //this.endDay = newEndDay;
   }
 
   /**
@@ -38,11 +36,14 @@ public class Appointment extends AbstractAppointment {
    */
   @Override
   public String getBeginTimeString() {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    //return beginTime + " " + beginDay;
     return beginTime;
   }
 
-  public void setBeginTimeString(int beginTime, int beginDay) {
-    this.beginTime = beginTime + " " + beginDay;
+  public void setBeginTimeString(String beginTime) {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    this.beginTime = beginTime;
   }
 
   /**
@@ -51,21 +52,14 @@ public class Appointment extends AbstractAppointment {
    */
   @Override
   public String getEndTimeString() {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    //return endTime + " " + endDay;
     return endTime;
   }
 
-  @Override
-  public  Date getEndTime() {
-    return beginDay;
-  }
-
-  @Override
-  public Date getBeginTime() {
-    return endDay;
-  }
-
-  public void setEndTimeString(int endTime, int endDay) {
-    this.endTime = endTime + " " + endDay;
+  public void setEndTimeString(String endTime) {
+    //throw new UnsupportedOperationException("This method is not implemented yet");
+    this.endTime = endTime;
   }
 
   /**
@@ -74,6 +68,7 @@ public class Appointment extends AbstractAppointment {
    */
   @Override
   public String getDescription() {
+    //return "This method is not implemented yet";
     return description;
   }
 }
