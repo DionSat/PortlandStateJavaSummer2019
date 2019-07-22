@@ -37,8 +37,19 @@ public class TextParser implements AppointmentBookParser {
     public AbstractAppointmentBook parse() throws ParserException {
         BufferedReader br = null;
         File file = new File(fileName);
-        if(!file.exists() && !fileName.endsWith(".txt")) {
+        if(!file.exists() && fileName.endsWith(".txt")) {
             appointmentBook = new AppointmentBook("no owner");
+            /*System.out.println("cannot find file specified on path or filepath has no specified text file. Creating empty appointment and creating new file");
+            try {
+                if (file.createNewFile())
+                {
+                    System.out.println("File is created!");
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
         }
         else {
             try {

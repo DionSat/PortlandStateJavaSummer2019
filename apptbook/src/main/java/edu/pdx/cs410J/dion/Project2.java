@@ -176,19 +176,7 @@ public class Project2 {
             else if (textFlag && filePath == null) {
                 File f = new File(arg);
                 if(!f.isFile() && arg.endsWith(".txt")) {
-                    System.out.println("cannot find file specified on path or filepath has no specified text file. Creating empty appointment and creating new file");
-                    try {
-                        if (f.createNewFile())
-                        {
-                            System.out.println("File is created!");
-                        } else {
-                            System.out.println("File already exists.");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     filePath = arg;
-                    //filePathFlag = false;
                 }
                 else if(f.isFile() && arg.endsWith(".txt")) {
                     filePath = arg;
@@ -199,13 +187,7 @@ public class Project2 {
             }
 
             else if(!ownerFlag) {
-                //Had to add quotes to the owners field because it wasn't reading them
                 arg = "\"" + arg + "\"";
-                /*if(!arg.startsWith("\"") && !arg.endsWith("\"")) {
-                    owner = "bad";
-                    //exitFlag = true;
-                    break;
-                }*/
                 if(isNumeric(arg)) {
                     System.err.println("Invalid name type!");
                     exitFlag = true;
@@ -241,9 +223,6 @@ public class Project2 {
                 else if(!descriptionFlag) {
                     description += " " + arg;
                 }
-                /*if(isValidDate(arg)) {
-                    descriptionFlag = true;
-                }*/
             }
 
             else if(startDate == null) {
