@@ -233,10 +233,6 @@ public class Project2 {
                 startTime = arg;
             }
 
-            /*else if(startDay == null) {
-                startDay = arg;
-            }*/
-
             else if(endDate == null) {
                 endDate = arg;
             }
@@ -249,10 +245,6 @@ public class Project2 {
                 System.err.println("Too many arguments!");
                 System.exit(3);
             }
-
-            /*else if(endDay == null) {
-                endDay = arg;
-            }*/
         }
 
         if(!exitFlag) {
@@ -263,8 +255,6 @@ public class Project2 {
             commandArg[2] = description;
             commandArg[3] = startDate + " " + startTime;
             commandArg[4] = endDate + " " + endTime;
-            //commandArg[5] = endDay;
-            //commandArg[6] = startDay;
 
             return commandArg;
         }
@@ -320,20 +310,8 @@ public class Project2 {
      *        The end time of the appointment
      */
     private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime) {
-        //regex taken from public regex libary @http://regexlib.com/REDetails.aspx?regexp_id=761
-        //String regEx = "(?=\\d)^(?:(?!(?:10\\D(?:0?[5-9]|1[0-4])\\D(?:1582))|(?:0?9\\D(?:0?[3-9]|1[0-3])\\D(?:1752)))((?:0?[13578]|1[02])|(?:0?[469]|11)(?!\\/31)(?!-31)(?!\\.31)|(?:0?2(?=.?(?:(?:29.(?!000[04]|(?:(?:1[^0-6]|[2468][^048]|[3579][^26])00))(?:(?:(?:\\d\\d)(?:[02468][048]|[13579][26])(?!\\x20BC))|(?:00(?:42|3[0369]|2[147]|1[258]|09)\\x20BC))))))|(?:0?2(?=.(?:(?:\\d\\D)|(?:[01]\\d)|(?:2[0-8])))))([-.\\/])(0?[1-9]|[12]\\d|3[01])\\2(?!0000)((?=(?:00(?:4[0-5]|[0-3]?\\d)\\x20BC)|(?:\\d{4}(?!\\x20BC)))\\d{4}(?:\\x20BC)?)(?:$|(?=\\x20\\d)\\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\\d){0,2}(?:\\x20[aApP][mM]))|(?:[01]\\d|2[0-3])(?::[0-5]\\d){1,2})?$";
-        //array of am/pm strings to compare to
         String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
-        //String[] ampm = {"am", "AM", "Am", "aM", "pm", "PM", "Pm", "pM"};
 
-        //check if owner is present in argument
-        /*if(owner.equals("bad")) {
-            System.err.println("Error name needs to be of the form \\\"NAME\\\"!");
-            System.exit(3);
-        }*/
-        /*if (fileFlag == false) {
-            System.out.println("Filepath is not a file or there was no file specified");
-        }*/
         if(owner == null) {
             System.err.println("Missing owner field!");
             System.exit(3);
@@ -353,16 +331,6 @@ public class Project2 {
             System.err.println("Missing beginTime field!");
             System.exit(3);
         }
-        /*//check if whether the start time, am/pm is present in argument
-        else if(startDay == null) {
-            System.err.println("Missing beginning am/pm field!");
-            System.exit(3);
-        }
-        //check if start time am/pm is in correct format
-        else if(checkDay(ampm, startDay)) {
-            System.err.println("Invalid beginning am/pm field!");
-            System.exit(3);
-        }*/
         //check if end date is present in argument
         else if(endDate == null) {
             System.err.println("Missing endDate field");
@@ -373,16 +341,6 @@ public class Project2 {
             System.err.println("Missing endTime field");
             System.exit(3);
         }
-        /*//check if end time am/pm is present in argument
-        else if(endDay == null) {
-            System.err.println("Missing ending am/pm field!");
-            System.exit(3);
-        }
-        //check if end time am/pm is in correct format
-        else if(checkDay(ampm, endDay)) {
-            System.err.println("Invalid ending am/pm field!");
-            System.exit(3);
-        }*/
         //check if the start date and time are in the correct format
         if(checkFormat(regEx, startDate, startTime)) {
             System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm am/pm)");

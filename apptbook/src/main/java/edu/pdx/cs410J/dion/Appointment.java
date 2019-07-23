@@ -2,31 +2,49 @@ package edu.pdx.cs410J.dion;
 
 import edu.pdx.cs410J.AbstractAppointment;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * This class will create an appointment and store each component the appointment
  * It is a child of the AbstractAppointment Class
  */
 public class Appointment extends AbstractAppointment {
-  private String beginTime;
-  private String endTime;
+  private Date beginDate;
+  private Date endDate;
   private String description;
-  //private String beginDay;
-  //private String endDay;
 
   /**
    * Function to instantiate the Appointment class
    * @param newDescription
    *        the description passed in
-   * @param newBeginTime
+   * @param beginDate
    *        the beginning time passed in
-   * @param newEndTime
+   * @param endDate
    *        the ending time passed in
    */
-  public Appointment(String newDescription, String newBeginTime, String newEndTime) {
+  public Appointment(String newDescription, String beginDate, String endDate) {
     this.description = newDescription;
-    this.beginTime = newBeginTime;
+
+    SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyy hh:mm a");
+    try {
+      this.beginDate = df.parse(beginDate.trim());
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    try {
+      this.endDate = df.parse(endDate.trim());
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Appointment(String newDescription, Date beginDate, Date endDate) {
+    this.description = newDescription;
+    this.beginDate = beginDate;
     //this.beginDay = newBeginDay;
-    this.endTime = newEndTime;
+    this.endDate = endDate;
     //this.endDay = newEndDay;
   }
 
@@ -36,14 +54,8 @@ public class Appointment extends AbstractAppointment {
    */
   @Override
   public String getBeginTimeString() {
-    //throw new UnsupportedOperationException("This method is not implemented yet");
-    //return beginTime + " " + beginDay;
-    return beginTime;
-  }
-
-  public void setBeginTimeString(String beginTime) {
-    //throw new UnsupportedOperationException("This method is not implemented yet");
-    this.beginTime = beginTime;
+    SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyy hh:mm a");
+    return df.format(beginDate);
   }
 
   /**
@@ -52,14 +64,8 @@ public class Appointment extends AbstractAppointment {
    */
   @Override
   public String getEndTimeString() {
-    //throw new UnsupportedOperationException("This method is not implemented yet");
-    //return endTime + " " + endDay;
-    return endTime;
-  }
-
-  public void setEndTimeString(String endTime) {
-    //throw new UnsupportedOperationException("This method is not implemented yet");
-    this.endTime = endTime;
+    SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyy hh:mm a");
+    return df.format(endDate);
   }
 
   /**
@@ -70,6 +76,16 @@ public class Appointment extends AbstractAppointment {
   public String getDescription() {
     //return "This method is not implemented yet";
     return description;
+  }
+
+  @Override
+  public  Date getEndTime() {
+    return endDate;
+  }
+
+  @Override
+  public Date getBeginTime() {
+    return beginDate;
   }
 }
 
