@@ -37,7 +37,7 @@ public class TextParser implements AppointmentBookParser {
     public AbstractAppointmentBook parse() throws ParserException {
         BufferedReader br = null;
         File file = new File(fileName);
-        if(!file.exists() && !fileName.endsWith(".txt")) {
+        if(!file.exists() && fileName.endsWith(".txt")) {
             appointmentBook = new AppointmentBook("no owner");
         }
         else {
@@ -122,3 +122,4 @@ public class TextParser implements AppointmentBookParser {
         return isValid;
     }
 }
+

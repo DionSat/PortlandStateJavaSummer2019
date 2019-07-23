@@ -72,3 +72,4 @@ public class Appointment extends AbstractAppointment {
     return description;
   }
 }
+
