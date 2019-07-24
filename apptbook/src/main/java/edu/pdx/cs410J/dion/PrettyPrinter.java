@@ -11,14 +11,30 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * This function takes an abstractAppointmentBook and pretty prints it or nicely formats it
+ * to display all the fields including the appointment session duration. If - command is not given
+ * then the appointmentbook will be pretty printed to a text file if the dash command is found then it will
+ * be printed to the screen.
+ */
 public class PrettyPrinter implements AppointmentBookDumper {
     private String filename;
     private FileOutputStream os = null;
 
+    /**
+     * Function to instantiate the PrettyPrinter class
+     * @param filename
+     *        The file path to the txt file
+     */
     public PrettyPrinter(String filename){
         this.filename = filename;
     }
 
+    /**
+     * Function to pretty print to the text file.
+     * @param abstractAppointmentBook
+     *        appointmentBook to be dumped
+     */
     @Override
     public void dump(AbstractAppointmentBook abstractAppointmentBook) {
         String content;
@@ -77,6 +93,11 @@ public class PrettyPrinter implements AppointmentBookDumper {
         }
     }
 
+    /**
+     * Function to pretty print to the screen
+     * @param abstractAppointmentBook
+     *        appointmentBook to be printed to the screen
+     */
     public void screendump(AbstractAppointmentBook abstractAppointmentBook) {
         String content;
         try {

@@ -343,6 +343,12 @@ public class Project3 {
         return !isValid;
     }
 
+    /**
+     * Check if date is valid
+     * @param inDate
+     *        String of date
+     * @return  true if valid date or false if not
+     */
     private static boolean isValidDate(String inDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateFormat.setLenient(false);
@@ -368,6 +374,10 @@ public class Project3 {
      *        The end date of the appointment
      * @param endTime
      *        The end time of the appointment
+     * @param startDay
+     *        am/pm of the start date/time
+     * @param endDay
+     *        am/pm or the end date/time
      */
     private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
         //String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
@@ -476,6 +486,12 @@ public class Project3 {
         return flag;
     }
 
+    /**
+     * This function looks for the pretty option in the command argument
+     * @param args
+     *        The whole command line argument
+     * @return  the boolean value flag as true, if README is present or false if not
+     */
     private static boolean checkPrettyPrintFileOption(String[] args) {
         boolean flag = false;
         for (String arg : args) {
@@ -519,32 +535,6 @@ public class Project3 {
             }
         }
         return !isValid;
-    }
-
-    /**
-     * This is for project2 for now im leaving it blank because im not done. I plan on turning all the strings into date objects in project 2.
-     * @param date
-     * @param time
-     * @return
-     */
-    public static Date ConvertDateAndTime(String date, String time) {
-        //Displaying given time in 12 hour format with AM/PM
-        SimpleDateFormat sdf4 = null;
-        Date date4 = null;
-        String dateString = date + " " + time;
-        //old format
-        SimpleDateFormat sdf3 = new SimpleDateFormat("dd/MM/yyyy HH:mm a");
-        try{
-            date4 = sdf3.parse(dateString);
-        }catch(ParseException e){
-            e.printStackTrace();
-        }
-        return date4;
-    }
-
-    public static void PrintDateAndTime(Date toPrint, String ampm) {
-        SimpleDateFormat sdf4 = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-        System.out.println("Given date and time in AM/PM: "+sdf4.format(toPrint) + " " + ampm);
     }
 
 }

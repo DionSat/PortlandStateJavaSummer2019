@@ -41,6 +41,15 @@ public class Appointment extends AbstractAppointment implements Comparable<Appoi
     }
   }
 
+  /**
+   * Function instantiates the Appointment class using date arguments
+   * @param newDescription
+   *        the description passed in
+   * @param beginDate
+   *        the beginning time passed in as a date
+   * @param endDate
+   *        the ending time passed in as a date
+   */
   public Appointment(String newDescription, Date beginDate, Date endDate) {
     this.description = newDescription;
     this.beginDate = beginDate;
@@ -79,16 +88,31 @@ public class Appointment extends AbstractAppointment implements Comparable<Appoi
     return description;
   }
 
+  /**
+   * This function returns the start time of data type date
+   * @return start time
+   */
   @Override
   public  Date getEndTime() {
     return endDate;
   }
 
+  /**
+   * This function returns the end time of data type date
+   * @return end time
+   */
   @Override
   public Date getBeginTime() {
     return beginDate;
   }
 
+  /**
+   * Overridden function of compareTo so when objects of Appointment are compared
+   * and checked against each other according to time.
+   * @param o
+   *        The left assignment object compared against.
+   * @return return 1 or 0
+   */
   @Override
   public int compareTo(Appointment o) {
     try {
