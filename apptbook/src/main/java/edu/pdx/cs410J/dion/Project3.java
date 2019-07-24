@@ -3,6 +3,7 @@ package edu.pdx.cs410J.dion;
 import edu.pdx.cs410J.ParserException;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
  * The main class for the CS410J appointment book Project.
  * This class handles and implements the command argument parsing and options
  * @author Dion Satcher
- * @version 1 7/10/2019
+ * @version 2.1 7/24/2019
  */
 public class Project3 {
 
@@ -21,18 +22,34 @@ public class Project3 {
         boolean printFlag;
         boolean textFlag;
         boolean readMeFlag;
+        boolean prettyFlag = false;
+        Date beginDateTime = null;
+        Date endDateTime = null;
+        String dash = "-";
 
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         printFlag = checkPrintOption(args);
         textFlag = checkTextFileOption(args);
         readMeFlag = checkReadMeFileOption(args);
+        prettyFlag = checkPrettyPrintFileOption(args);
 
         if(readMeFlag) {
             printReadme();
             System.exit(2);
         }
         String[] cmdArg = parseText(args);
+        try {
+            beginDateTime = format.parse(cmdArg[3]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            endDateTime = format.parse(cmdArg[4]);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        Appointment appointment = new Appointment(cmdArg[2], cmdArg[3], cmdArg[4]);
+        Appointment appointment = new Appointment(cmdArg[2], beginDateTime, endDateTime);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
 
         if(textFlag && cmdArg[0] != null) {
@@ -58,6 +75,26 @@ public class Project3 {
                 } else {
                     appointmentBook.addAppointment(appointment);
                     textDumper.dump(appointmentBook);
+                }
+            }
+        }
+
+        if (prettyFlag) {
+            PrettyPrinter prettyPrint = new PrettyPrinter(cmdArg[0]);
+
+            if(!textFlag) {
+                appointmentBook.addAppointment(appointment);
+            }
+            if (cmdArg[5].equals("-")) {
+                System.out.println();
+                prettyPrint.screendump(appointmentBook);
+            }
+            else if(cmdArg[5].equals("empty")){
+                File aFile = new File(cmdArg[0]);
+                if (aFile.exists() && !aFile.isDirectory()) {
+                    prettyPrint.dump(appointmentBook);
+                } else {
+                    prettyPrint.dump(appointmentBook);
                 }
             }
         }
@@ -88,6 +125,8 @@ public class Project3 {
                 "beginTime - (date AND time) When the appt begins (12-hour time)\n" +
                 "endTime - (date AND time) When the appt ends (12-hour time)\n" +
                 "  options are (options may appear in any order):\n" +
+                "    -pretty                  file Pretty print the appointment book to\n" +
+                "                             a text file or standard out (file -)\n" +
                 "    -print                   Prints a description of the new appointment\n" +
                 "    -README                  Prints a README for this project and exits\n" +
                 "    -textFile                Where to read/write the appointment book\n" +
@@ -104,7 +143,7 @@ public class Project3 {
      * @return the command line arguments such as owner, description, etc  in a string array
      */
     static String[] parseText(String[] args) {
-        String commandArg[] = new String[5];
+        String commandArg[] = new String[6];
         String owner = null;
         String startTime = null;
         String startDate = null;
@@ -127,6 +166,9 @@ public class Project3 {
         boolean ownerTrigger = false;
         boolean exitFlag = false;
         boolean print = false;
+        boolean prettyFlag = false;
+        String dash = "empty";
+        boolean dashFlag = false;
 
     /*
     Check if the command line arguments have multiple quotes or more than one
@@ -163,13 +205,25 @@ public class Project3 {
         for (String arg : args) {
             if (arg.startsWith("-textFile") && !textFlag) {
                 textFlag = true;
+
             }
 
-            else if (arg.startsWith("-print")) {
+            else if (arg.startsWith("-print") && !print) {
                 print = true;
+
             }
 
-            else if (textFlag && filePath == null) {
+            else if (arg.equals("-") && !dashFlag) {
+                dash = arg;
+                dashFlag = true;
+
+            }
+
+            else if (arg.startsWith("-pretty") && !prettyFlag) {
+                prettyFlag = true;
+            }
+
+            else if ((textFlag || prettyFlag) && filePath == null) {
                 File f = new File(arg);
                 if(!f.isFile() && arg.endsWith(".txt")) {
                     filePath = arg;
@@ -229,6 +283,10 @@ public class Project3 {
                 startTime = arg;
             }
 
+            else if(startDay == null) {
+                startDay = arg;
+            }
+
             else if(endDate == null) {
                 endDate = arg;
             }
@@ -237,20 +295,26 @@ public class Project3 {
                 endTime = arg;
             }
 
-            else if(owner != null && description != null && startDate!= null && startTime != null && endDate != null  && endTime != null  && arg != null) {
+            else if(endDay == null) {
+                endDay = arg;
+            }
+
+            else if(owner != null && description != null && startDate!= null && startTime != null && endDate != null  && endTime != null  && arg != null && startDay != null && endDay != null) {
                 System.err.println("Too many arguments!");
                 System.exit(3);
             }
         }
 
+
         if(!exitFlag) {
-            checkCommandArgument(owner, description, startDate, startTime, endDate, endTime);
+            checkCommandArgument(owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
 
             commandArg[0] = filePath;
             commandArg[1] = owner;
             commandArg[2] = description;
-            commandArg[3] = startDate + " " + startTime;
-            commandArg[4] = endDate + " " + endTime;
+            commandArg[3] = startDate + " " + startTime + " " + startDay;
+            commandArg[4] = endDate + " " + endTime + " " + endDay;
+            commandArg[5] = dash;
 
             return commandArg;
         }
@@ -270,10 +334,10 @@ public class Project3 {
      *        The time that is passed into the function
      * @return this returns whether the date and time format are valid. True if they they are and false if not.
      */
-    private static boolean checkFormat(String regEx, String date, String time) {
+    private static boolean checkFormat(String regEx, String date, String time, String day) {
         boolean isValid = false;
         Pattern p = Pattern.compile(regEx);
-        if(p.matcher(date + " " + time).find()) {
+        if(p.matcher(date + " " + time + " " + day).find()) {
             isValid = true;
         }
         return !isValid;
@@ -305,8 +369,9 @@ public class Project3 {
      * @param endTime
      *        The end time of the appointment
      */
-    private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime) {
-        String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
+    private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
+        //String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
+        String regEx = "^(((0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](0[1-9]|1\\d|2[0-8])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](29)[\\/\\.-]((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d))\\s(AM|am|PM|pm))$";
 
         if(owner == null) {
             System.err.println("Missing owner field!");
@@ -327,6 +392,10 @@ public class Project3 {
             System.err.println("Missing beginTime field!");
             System.exit(3);
         }
+        else if(startDay == null) {
+            System.err.println("Missing start am/pm field");
+            System.exit(3);
+        }
         //check if end date is present in argument
         else if(endDate == null) {
             System.err.println("Missing endDate field");
@@ -337,13 +406,17 @@ public class Project3 {
             System.err.println("Missing endTime field");
             System.exit(3);
         }
+        else if(endDay == null) {
+            System.err.println("Missing end am/pm field");
+            System.exit(3);
+        }
         //check if the start date and time are in the correct format
-        if(checkFormat(regEx, startDate, startTime)) {
+        if(checkFormat(regEx, startDate, startTime, startDay)) {
             System.err.println("Invalid Start date/time format! (Ex: MM/DD/YYYY hh:mm am/pm)");
             System.exit(3);
         }
         //check if the end date and time are in the correct format
-        if(checkFormat(regEx, endDate, endTime)) {
+        if(checkFormat(regEx, endDate, endTime, endDay)) {
             System.err.println("Invalid End date/time format! (Ex: MM/DD/YYYY hh:mm)");
             System.exit(3);
         }
@@ -396,6 +469,18 @@ public class Project3 {
         for (String arg : args) {
             //look for print option
             if (arg.startsWith("-README")) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean checkPrettyPrintFileOption(String[] args) {
+        boolean flag = false;
+        for (String arg : args) {
+            //look for print option
+            if (arg.startsWith("-pretty")) {
                 flag = true;
                 break;
             }

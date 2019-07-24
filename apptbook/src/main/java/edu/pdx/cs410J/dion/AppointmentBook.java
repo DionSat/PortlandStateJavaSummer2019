@@ -54,4 +54,6 @@ public class AppointmentBook extends AbstractAppointmentBook {
     public void addAppointment(AbstractAppointment newAppointment) {
         appointments.add((Appointment) newAppointment);
     }
+
+    private void sortAppointmentBook(Collection<Appointment> appointments) {}
 }

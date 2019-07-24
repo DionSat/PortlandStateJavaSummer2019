@@ -5,12 +5,13 @@ import edu.pdx.cs410J.AbstractAppointment;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Comparator;
 
 /**
  * This class will create an appointment and store each component the appointment
  * It is a child of the AbstractAppointment Class
  */
-public class Appointment extends AbstractAppointment {
+public class Appointment extends AbstractAppointment implements Comparable<Appointment>{
   private Date beginDate;
   private Date endDate;
   private String description;
@@ -87,5 +88,36 @@ public class Appointment extends AbstractAppointment {
   public Date getBeginTime() {
     return beginDate;
   }
+
+  @Override
+  public int compareTo(Appointment o) {
+    try {
+      if (this.beginDate == null) {
+        throw new NullPointerException("time and date empty!");
+      }
+      if (this.endDate == null) {
+        throw new NullPointerException("time and date empty");
+      }
+      long difference = this.beginDate.getTime() - o.endDate.getTime();
+
+      if (difference > 0) {
+        return 1;
+      }
+
+      if (difference < 0) {
+        return -1;
+      }
+
+      //they are equal
+      if (difference == 0 ) {
+        return this.description.compareTo(o.description);
+      }
+
+    } catch (NullPointerException e) {
+      System.out.println("Found a Null Pointer in compareTo");
+    }
+    return 0;
+  }
+
 }
 

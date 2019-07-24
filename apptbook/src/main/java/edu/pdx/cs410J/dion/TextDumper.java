@@ -45,8 +45,8 @@ public class TextDumper implements AppointmentBookDumper {
                 byte[] bytesArray = content.getBytes();
                 os.write(bytesArray);
                 os.flush();
-                System.out.println("Write Successful");
             }
+            System.out.println("Write Successful");
         } catch(IOException e) {e.printStackTrace();}
         finally {
             try {
