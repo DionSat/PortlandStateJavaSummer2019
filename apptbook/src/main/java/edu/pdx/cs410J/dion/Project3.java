@@ -85,11 +85,11 @@ public class Project3 {
             if(!textFlag) {
                 appointmentBook.addAppointment(appointment);
             }
-            if (cmdArg[5].equals("-")) {
+            if (cmdArg[0].equals("-")) {
                 System.out.println();
                 prettyPrint.screendump(appointmentBook);
             }
-            else if(cmdArg[5].equals("empty")){
+            else{
                 File aFile = new File(cmdArg[0]);
                 if (aFile.exists() && !aFile.isDirectory()) {
                     prettyPrint.dump(appointmentBook);
@@ -143,7 +143,7 @@ public class Project3 {
      * @return the command line arguments such as owner, description, etc  in a string array
      */
     static String[] parseText(String[] args) {
-        String commandArg[] = new String[6];
+        String commandArg[] = new String[5];
         String owner = null;
         String startTime = null;
         String startDate = null;
@@ -167,8 +167,6 @@ public class Project3 {
         boolean exitFlag = false;
         boolean print = false;
         boolean prettyFlag = false;
-        String dash = "empty";
-        boolean dashFlag = false;
 
     /*
     Check if the command line arguments have multiple quotes or more than one
@@ -213,27 +211,12 @@ public class Project3 {
 
             }
 
-            else if (arg.equals("-") && !dashFlag) {
-                dash = arg;
-                dashFlag = true;
-
-            }
-
             else if (arg.startsWith("-pretty") && !prettyFlag) {
                 prettyFlag = true;
             }
 
             else if ((textFlag || prettyFlag) && filePath == null) {
-                File f = new File(arg);
-                if(!f.isFile() && arg.endsWith(".txt")) {
-                    filePath = arg;
-                }
-                else if(f.isFile() && arg.endsWith(".txt")) {
-                    filePath = arg;
-                }
-                else if(!f.isFile() && !arg.endsWith(".txt")) {
-                    System.err.println("Error no text file specified in command line argument.");
-                }
+                filePath = arg;
             }
 
             else if(!ownerFlag) {
@@ -314,7 +297,6 @@ public class Project3 {
             commandArg[2] = description;
             commandArg[3] = startDate + " " + startTime + " " + startDay;
             commandArg[4] = endDate + " " + endTime + " " + endDay;
-            commandArg[5] = dash;
 
             return commandArg;
         }
