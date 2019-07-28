@@ -154,7 +154,6 @@ public class Project3 {
         String endDay = null;
         Integer quoteCount = 0;
         boolean textFlag = false;
-        boolean filePathFlag = true;
         String filePath = null;
         //A flag that stops depending on whether the delimiter or token has been found
         boolean descriptionFlag = false;
