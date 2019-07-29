@@ -1,0 +1,74 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for edu.pdx.cs410J.dion:apptbook:jar:Summer2019
+[WARNING] 'parent.relativePath' of POM edu.pdx.cs410J.dion:apptbook:Summer2019 (/u/dion/Classes/CS410J/PortlandStateJavaSummer2019/apptbook/pom.xml) points at edu.pdx.cs410J.YourUserId:PortlandStateJavaSummer2019 instead of edu.pdx.cs410J:CS410J, please verify your project structure @ line 3, column 11
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --------------------< edu.pdx.cs410J.dion:apptbook >--------------------
+[INFO] Building CS410J Appointment Book Project Summer2019
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> maven-archetype-plugin:3.1.1:generate (default-cli) > generate-sources @ apptbook >>>
+[INFO] 
+[INFO] --- maven-enforcer-plugin:3.0.0-M2:enforce (enforce-versions) @ apptbook ---
+[INFO] 
+[INFO] --- buildnumber-maven-plugin:1.4:create (default) @ apptbook ---
+[INFO] Executing: /bin/sh -c cd '/u/dion/Classes/CS410J/PortlandStateJavaSummer2019/apptbook' && 'git' 'rev-parse' '--verify' 'HEAD'
+[INFO] Working directory: /u/dion/Classes/CS410J/PortlandStateJavaSummer2019/apptbook
+[INFO] Storing buildNumber: edd73defb94dc9e52c525d9b17413866dca795c3 at timestamp:  2019-07-10T12:13:18.558-0700
+[INFO] Storing buildScmBranch: master
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.4:prepare-agent (default-prepare-agent) @ apptbook ---
+[INFO] argLine set to -javaagent:/u/dion/.m2/repository/org/jacoco/org.jacoco.agent/0.8.4/org.jacoco.agent-0.8.4-runtime.jar=destfile=/u/dion/Classes/CS410J/PortlandStateJavaSummer2019/apptbook/target/jacoco.exec
+[INFO] 
+[INFO] <<< maven-archetype-plugin:3.1.1:generate (default-cli) < generate-sources @ apptbook <<<
+[INFO] 
+[INFO] 
+[INFO] --- maven-archetype-plugin:3.1.1:generate (default-cli) @ apptbook ---
+[INFO] Generating project in Interactive mode
+[INFO] No archetype defined. Using maven-archetype-quickstart (org.apache.maven.archetypes:maven-archetype-quickstart:1.0)
+Choose archetype:
+1: remote -> edu.pdx.cs410J:student-archetype (Maven archetype for the Student sample project)
+2: remote -> edu.pdx.cs410J:java-koans-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+3: remote -> edu.pdx.cs410J:apptbook-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+4: remote -> edu.pdx.cs410J:apptbook-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+5: remote -> edu.pdx.cs410J:apptbook-gwt-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+6: remote -> edu.pdx.cs410J:airline-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+7: remote -> edu.pdx.cs410J:airline-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+8: remote -> edu.pdx.cs410J:phonebill-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+9: remote -> edu.pdx.cs410J:phonebill-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+   Your filter doesn't match any archetype (hint: enter to return to initial list)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : Choose archetype:
+1: remote -> edu.pdx.cs410J:student-archetype (Maven archetype for the Student sample project)
+2: remote -> edu.pdx.cs410J:java-koans-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+3: remote -> edu.pdx.cs410J:apptbook-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+4: remote -> edu.pdx.cs410J:apptbook-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+5: remote -> edu.pdx.cs410J:apptbook-gwt-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+6: remote -> edu.pdx.cs410J:airline-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+7: remote -> edu.pdx.cs410J:airline-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+8: remote -> edu.pdx.cs410J:phonebill-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+9: remote -> edu.pdx.cs410J:phonebill-web-archetype (Example Java Code for CS410J: Advanced Java Programming at Portland State University)
+Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : 
