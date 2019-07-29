@@ -44,7 +44,7 @@ accordingly
   
   
   
-  <groupId>edu.pdx.cs410J.YourUserId</groupId>
+  <groupId>edu.pdx.cs410J.dion</groupId>
           
   
   
@@ -74,7 +74,7 @@ accordingly
   
   
   
-  <url>http://YourGitHubUser.github.io/PortlandStateJavaSummer2019</url>
+  <url>http://DionSat.github.io/PortlandStateJavaSummer2019</url>
           
   
   
@@ -134,7 +134,7 @@ accordingly
     
     
     
-    <url>https://github.com/YourGitHubUser/PortlandStateJavaSummer2019/issues</url>
+    <url>https://github.com/DionSat/PortlandStateJavaSummer2019/issues</url>
                   
   
   
@@ -254,7 +254,7 @@ accordingly
     
     
     
-    <connection>scm:git:git@github.com:GitHubUserName/PortlandStateJavaSummer2019.git</connection>
+    <connection>scm:git:git@github.com:DionSat/PortlandStateJavaSummer2019.git</connection>
                   
   
   
@@ -319,7 +319,7 @@ accordingly
       
       
       
-      <url>github:http://YourGitHubUser.github.io/PortlandStateJavaSummer2019/</url>
+      <url>github:http://DionSat.github.io/PortlandStateJavaSummer2019/</url>
                             
     
     
