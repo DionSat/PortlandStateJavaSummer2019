@@ -100,37 +100,31 @@ public class PrettyPrinter implements AppointmentBookDumper {
      */
     public void screendump(AbstractAppointmentBook abstractAppointmentBook) {
         String content;
-        try {
-            File file = new File(filename);
-            os = new FileOutputStream(file, false);
-            Collection<Appointment> appointments = abstractAppointmentBook.getAppointments();
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-            Date beginDate = null;
-            Date endDate = null;
+        Collection<Appointment> appointments = abstractAppointmentBook.getAppointments();
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date beginDate = null;
+        Date endDate = null;
 
-            System.out.print("====== Appointment Book ======\n\nOwner Name: ");
-            System.out.print(abstractAppointmentBook.getOwnerName());
-            System.out.print("\n\n------------------------------\nAppointments:\n");
-            for (Appointment app : appointments) {
-                try {
-                    beginDate = format.parse(app.getBeginTimeString());
-                } catch (ParseException e) {
-                    System.out.println("Date format incorrect");
-                }
-                try {
-                    endDate = format.parse(app.getEndTimeString());
-                } catch (ParseException e) {
-                    System.out.println("Date format incorrect");
-                }
-                int duration = (int) ((endDate.getTime() - beginDate.getTime()) / (1000 * 60));
-
-                content = "Description: " + app.getDescription() + "\nStart Time: " + app.getBeginTimeString()
-                        + "\nEnd Time: " + app.getEndTimeString() + "\nDuration: " + duration + " minutes\n";
-
-                System.out.println(content);
+        System.out.print("====== Appointment Book ======\n\nOwner Name: ");
+        System.out.print(abstractAppointmentBook.getOwnerName());
+        System.out.print("\n\n------------------------------\nAppointments:\n");
+        for (Appointment app : appointments) {
+            try {
+                beginDate = format.parse(app.getBeginTimeString());
+            } catch (ParseException e) {
+                System.out.println("Date format incorrect");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                endDate = format.parse(app.getEndTimeString());
+            } catch (ParseException e) {
+                System.out.println("Date format incorrect");
+            }
+            int duration = (int) ((endDate.getTime() - beginDate.getTime()) / (1000 * 60));
+
+            content = "Description: " + app.getDescription() + "\nStart Time: " + app.getBeginTimeString()
+                    + "\nEnd Time: " + app.getEndTimeString() + "\nDuration: " + duration + " minutes\n";
+
+            System.out.println(content);
         }
         System.out.println("\n--- End of Appointments ---\n");
     }

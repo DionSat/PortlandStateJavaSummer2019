@@ -5,6 +5,7 @@ import edu.pdx.cs410J.AbstractAppointmentBook;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * This class will create Collection of appointment books and store each appointment
@@ -12,7 +13,7 @@ import java.util.Collection;
  */
 public class AppointmentBook extends AbstractAppointmentBook {
     private String owner;
-    private Collection<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointments = new ArrayList<>();
 
     /**
      * Function to instantiate the AppointmentBook class
@@ -41,7 +42,7 @@ public class AppointmentBook extends AbstractAppointmentBook {
      * @return returns appointment object
      */
     @Override
-    public Collection getAppointments() {
+    public List getAppointments() {
         return appointments;
     }
 
@@ -54,6 +55,4 @@ public class AppointmentBook extends AbstractAppointmentBook {
     public void addAppointment(AbstractAppointment newAppointment) {
         appointments.add((Appointment) newAppointment);
     }
-
-    private void sortAppointmentBook(Collection<Appointment> appointments) {}
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ public class Project3 {
         Date beginDateTime = null;
         Date endDateTime = null;
         String dash = "-";
+        boolean validDate = false;
 
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         printFlag = checkPrintOption(args);
@@ -48,14 +50,22 @@ public class Project3 {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        if(!isValidDateRange(beginDateTime, endDateTime, validDate)) {
+            System.err.println("Dates are invalid!");
+            System.exit(3);
+        }
 
         Appointment appointment = new Appointment(cmdArg[2], beginDateTime, endDateTime);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[1]);
 
+        TextParser textParser;
+        TextDumper textDumper;
+        AppointmentBook parsedAppointment = null;
+
         if(textFlag && cmdArg[0] != null) {
-            TextParser textParser = new TextParser(cmdArg[0]);
-            TextDumper textDumper = new TextDumper(cmdArg[0]);
-            AppointmentBook parsedAppointment = new AppointmentBook(cmdArg[1]);
+            textParser = new TextParser(cmdArg[0]);
+            textDumper = new TextDumper(cmdArg[0]);
+            parsedAppointment = new AppointmentBook(cmdArg[1]);
 
             try {
                 parsedAppointment = (AppointmentBook) textParser.parse();
@@ -65,7 +75,8 @@ public class Project3 {
 
             if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                 parsedAppointment.addAppointment(appointment);
-
+                Collections.sort(parsedAppointment.getAppointments());
+                Collections.sort(parsedAppointment.getAppointments());
                 textDumper.dump(parsedAppointment);
             } else {
                 File file = new File(cmdArg[0]);
@@ -85,14 +96,28 @@ public class Project3 {
             if(!textFlag) {
                 appointmentBook.addAppointment(appointment);
             }
-            if (cmdArg[0].equals("-")) {
+            if (cmdArg[5].equals("-")) {
                 System.out.println();
-                prettyPrint.screendump(appointmentBook);
+                if(textFlag && cmdArg[0] != null) {
+                    if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
+                        prettyPrint.screendump(parsedAppointment);
+                    }
+                }
+                else {
+                    prettyPrint.screendump(appointmentBook);
+                }
             }
             else{
-                File aFile = new File(cmdArg[0]);
+                File aFile = new File(cmdArg[5]);
                 if (aFile.exists() && !aFile.isDirectory()) {
-                    prettyPrint.dump(appointmentBook);
+                    if(textFlag && cmdArg[0] != null) {
+                        if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
+                            prettyPrint.dump(parsedAppointment);
+                        }
+                    }
+                    else {
+                        prettyPrint.dump(appointmentBook);
+                    }
                 } else {
                     prettyPrint.dump(appointmentBook);
                 }
@@ -105,6 +130,32 @@ public class Project3 {
         }
 
         System.exit(1);
+    }
+
+    /**
+     * This function checks whether the dates are correctly placed and not misplaced and whether start/end date are switched.
+     * @param startDate
+     *        The start date of the appointment
+     * @param endDate
+     *        The end date of the appointment
+     * @param equalOK
+     *        Boolean flag to check whether valid
+     * @return
+     *        return true if both date are valid or false if otherwise
+     */
+    public static boolean isValidDateRange(Date startDate, Date endDate, boolean equalOK) {
+        // false if either value is null
+        if (startDate == null || endDate == null) { return false; }
+
+        if (equalOK) {
+            // true if they are equal
+            if (startDate.equals(endDate)) { return true; }
+        }
+
+        // true if endDate after startDate
+        if (endDate.after(startDate)) { return true; }
+
+        return false;
     }
 
     /**
@@ -143,7 +194,7 @@ public class Project3 {
      * @return the command line arguments such as owner, description, etc  in a string array
      */
     static String[] parseText(String[] args) {
-        String commandArg[] = new String[5];
+        String commandArg[] = new String[6];
         String owner = null;
         String startTime = null;
         String startDate = null;
@@ -152,18 +203,14 @@ public class Project3 {
         String description = null;
         String startDay = null;
         String endDay = null;
+        String dash = "empty";
         Integer quoteCount = 0;
         boolean textFlag = false;
-        boolean filePathFlag = true;
         String filePath = null;
         //A flag that stops depending on whether the delimiter or token has been found
         boolean descriptionFlag = false;
         //Flag for checking the first assignment to description
         boolean descriptionTrigger = false;
-        //A flag that stops depending on whether the delimiter or token has been found
-        boolean ownerFlag = false;
-        //Flag for checking the first assignment to owner
-        boolean ownerTrigger = false;
         boolean exitFlag = false;
         boolean print = false;
         boolean prettyFlag = false;
@@ -219,14 +266,19 @@ public class Project3 {
                 filePath = arg;
             }
 
-            else if(!ownerFlag) {
-                arg = "\"" + arg + "\"";
+            else if ((textFlag && prettyFlag) && dash.equals("empty")) {
+                dash = arg;
+            }
+
+            else if(owner == null) {
+                //arg = "\"" + arg + "\"";
                 if(isNumeric(arg)) {
                     System.err.println("Invalid name type!");
                     exitFlag = true;
                     break;
                 }
-                if(!ownerTrigger) {
+                owner = arg;
+                /*if(!ownerTrigger) {
                     owner = arg;
                     ownerTrigger = true;
                 }
@@ -235,7 +287,7 @@ public class Project3 {
                 }
                 if(arg.endsWith("\"")) {
                     ownerFlag = true;
-                }
+                }*/
             }
 
             else if(descriptionFlag == false) {
@@ -297,6 +349,7 @@ public class Project3 {
             commandArg[2] = description;
             commandArg[3] = startDate + " " + startTime + " " + startDay;
             commandArg[4] = endDate + " " + endTime + " " + endDay;
+            commandArg[5] = dash;
 
             return commandArg;
         }
@@ -362,8 +415,7 @@ public class Project3 {
      *        am/pm or the end date/time
      */
     private static void checkCommandArgument(String owner, String description, String startDate, String startTime, String endDate, String endTime, String startDay, String endDay) {
-        //String regEx = "^([0]\\d|[1][0-2])\\/([0-2]\\d|[3][0-1])\\/([2][01]|[1][6-9])\\d{2}(\\s([0-1]\\d|[2][0-3])(\\:[0-5]\\d){1,2})?$";
-        String regEx = "^(((0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](0[1-9]|1\\d|2[0-8])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](29)[\\/\\.-]((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d))\\s(AM|am|PM|pm))$";
+        String regEx = "^(([0]?[1-9]|1[0-2])/([0-2]?[0-9]|3[0-1])/[1-2]\\d{3})? ?((([0-1]?\\d)|(2[0-3])):[0-5]\\d)?(:[0-5]\\d)? ?(AM|am|PM|pm)?$";
 
         if(owner == null) {
             System.err.println("Missing owner field!");

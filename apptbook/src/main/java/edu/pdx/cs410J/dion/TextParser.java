@@ -57,10 +57,6 @@ public class TextParser implements AppointmentBookParser {
                         System.err.println("Too few arguments!");
                         System.exit(1);
                     }
-                    if(app[0] == null || !app[0].startsWith("\"") && !app[0].endsWith("\"")){
-                        System.err.println("Malformed owner!");
-                        System.exit(1);
-                    }
                     if(app[1] == null){
                         System.err.println("Description is empty!");
                         System.exit(1);
