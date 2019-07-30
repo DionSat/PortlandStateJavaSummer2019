@@ -91,14 +91,14 @@ public class Project3 {
         }
 
         if (prettyFlag) {
-            PrettyPrinter prettyPrint = new PrettyPrinter(cmdArg[0]);
+            PrettyPrinter prettyPrint = new PrettyPrinter(cmdArg[5]);
 
             if(!textFlag) {
                 appointmentBook.addAppointment(appointment);
             }
             if (cmdArg[5].equals("-")) {
                 System.out.println();
-                if(textFlag && cmdArg[0] != null) {
+                if(textFlag && cmdArg[5] != null) {
                     if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                         prettyPrint.screendump(parsedAppointment);
                     }
@@ -110,7 +110,7 @@ public class Project3 {
             else{
                 File aFile = new File(cmdArg[5]);
                 if (aFile.exists() && !aFile.isDirectory()) {
-                    if(textFlag && cmdArg[0] != null) {
+                    if(textFlag && cmdArg[5] != null) {
                         if (Objects.equals(cmdArg[1], parsedAppointment.getOwnerName())) {
                             prettyPrint.dump(parsedAppointment);
                         }
@@ -119,7 +119,7 @@ public class Project3 {
                         prettyPrint.dump(appointmentBook);
                     }
                 } else {
-                    prettyPrint.dump(appointmentBook);
+                    prettyPrint.dump(parsedAppointment);
                 }
             }
         }
