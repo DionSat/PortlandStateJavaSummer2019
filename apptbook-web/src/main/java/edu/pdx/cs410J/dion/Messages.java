@@ -15,10 +15,26 @@ import java.util.regex.Pattern;
  */
 public class Messages
 {
+    public static String getMappingCount( int count )
+    {
+        return String.format( "This owner doesn't have a AppointmentBook currently.", count );
+    }
+
+    public static String formatKeyValuePair( String key, String value )
+    {
+        return String.format("  %s -> %s", key, value);
+    }
+
     public static String missingRequiredParameter( String parameterName )
     {
         return String.format("The required parameter \"%s\" is missing", parameterName);
     }
+
+    public static String mappedKeyValue( String key, String value )
+    {
+        return String.format( "Mapped %s to %s", key, value );
+    }
+
 
     public  static String printAppointment ( Appointment aAppointment) {
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");

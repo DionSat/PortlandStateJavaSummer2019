@@ -33,7 +33,7 @@ public class AppointmentBookServlet extends HttpServlet
      * are written to the HTTP response.
      */
     @Override
-    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         response.setContentType( "text/plain" );
 
@@ -61,7 +61,9 @@ public class AppointmentBookServlet extends HttpServlet
                 if (!foundSomthing) {
                     pw.println("No Appointments found within " + owner + " AppointmentBook." );
                 }
-            } else {
+            }
+
+            else {
                 pw.println("This owner doesn't have a AppointmentBook currently.");
             }
 
@@ -69,7 +71,7 @@ public class AppointmentBookServlet extends HttpServlet
 
         } else {
             PrintWriter pw = response.getWriter();
-            pw.println(String.format( "This owner doesn't have a AppointmentBook currently.", data.size()));
+            //pw.println(Messages.getMappingCount(data.size()));
 
             for (Map.Entry<String, AppointmentBook> entry : this.data.entrySet()) {
                 pw.println(String.format("  %s -> %s", entry.getKey(), entry.getValue().toString()));
@@ -123,7 +125,7 @@ public class AppointmentBookServlet extends HttpServlet
      * entry to the HTTP response.
      */
     @Override
-    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         response.setContentType("text/plain");
 

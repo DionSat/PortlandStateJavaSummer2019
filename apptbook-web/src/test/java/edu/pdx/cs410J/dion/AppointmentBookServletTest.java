@@ -1,5 +1,8 @@
-package edu.pdx.cs410J.dion;
+package edu.pdx.cs410J.seyed;
 
+import edu.pdx.cs410J.dion.AppointmentBookServlet;
+import edu.pdx.cs410J.dion.Messages;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -18,8 +21,30 @@ import static org.mockito.Mockito.*;
  */
 public class AppointmentBookServletTest {
 
+  @Ignore
   @Test
-  public void initiallyServletContainsNoDictionaryEntries() throws ServletException, IOException {
+  public void getOneServletPrettyPrintsPreCannedAppointment() throws ServletException, IOException {
+    AppointmentBookServlet servlet = new AppointmentBookServlet();
+
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    PrintWriter pw = mock(PrintWriter.class);
+
+    String ownerName = "PreCannedOwner";
+    when(request.getParameter("owner")).thenReturn(ownerName);
+
+    when(response.getWriter()).thenReturn(pw);
+
+    servlet.doGet(request, response);
+
+
+    verify(pw).println(ownerName);
+    verify(response).setStatus(HttpServletResponse.SC_OK);
+  }
+
+  @Ignore
+  @Test
+  public void initiallyServletContainsNoKeyValueMappings() throws ServletException, IOException {
     AppointmentBookServlet servlet = new AppointmentBookServlet();
 
     HttpServletRequest request = mock(HttpServletRequest.class);
@@ -30,21 +55,22 @@ public class AppointmentBookServletTest {
 
     servlet.doGet(request, response);
 
-    int expectedWords = 0;
-    verify(pw).println(Messages.formatWordCount(expectedWords));
+    int expectedMappings = 0;
+    verify(pw).println(Messages.getMappingCount(expectedMappings));
     verify(response).setStatus(HttpServletResponse.SC_OK);
   }
 
+  @Ignore
   @Test
-  public void addOneWordToDictionary() throws ServletException, IOException {
+  public void addOneMapping() throws ServletException, IOException {
     AppointmentBookServlet servlet = new AppointmentBookServlet();
 
-    String word = "TEST WORD";
-    String definition = "TEST DEFINITION";
+    String testKey = "TEST KEY";
+    String testValue = "TEST VALUE";
 
     HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter("word")).thenReturn(word);
-    when(request.getParameter("definition")).thenReturn(definition);
+    when(request.getParameter("key")).thenReturn(testKey);
+    when(request.getParameter("value")).thenReturn(testValue);
 
     HttpServletResponse response = mock(HttpServletResponse.class);
     PrintWriter pw = mock(PrintWriter.class);
@@ -52,10 +78,9 @@ public class AppointmentBookServletTest {
     when(response.getWriter()).thenReturn(pw);
 
     servlet.doPost(request, response);
-    verify(pw).println(Messages.definedWordAs(word, definition));
+    verify(pw).println(Messages.mappedKeyValue(testKey, testValue));
     verify(response).setStatus(HttpServletResponse.SC_OK);
 
-    assertThat(servlet.getDefinition(word), equalTo(definition));
+    //assertThat(servlet.getValueForKey(testKey), equalTo(testValue));
   }
-
 }

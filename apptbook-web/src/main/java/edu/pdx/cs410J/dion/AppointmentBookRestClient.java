@@ -61,10 +61,10 @@ public class AppointmentBookRestClient extends HttpRequestHelper {
     // Encode the parameters of our POST URL.
     this.url += "?owner=" + URLEncoder.encode(newOwner, "UTF-8");
 
-    return post(this.url,"owner", newOwner,
+    return post(this.url, Map.of("owner", newOwner,
             "description", newDescription,
             "beginTime", newBeginTime,
-            "endTime", newEndTime);
+            "endTime", newEndTime));
   }
 
   /**
@@ -95,11 +95,11 @@ public class AppointmentBookRestClient extends HttpRequestHelper {
             + "&beginTime=" + URLEncoder.encode(newBeginTime, "UTF-8")
             + "&endTime=" + URLEncoder.encode(newEndTime, "UTF-8");
 
-    return get(this.url);
+    return get(this.url, Map.of());
   }
 
 
   public Response removeAllMappings() throws IOException {
-    return delete(this.url);
+    return delete(this.url, Map.of());
   }
 }

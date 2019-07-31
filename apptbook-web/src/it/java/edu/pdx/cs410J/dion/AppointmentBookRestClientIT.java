@@ -1,13 +1,15 @@
 package edu.pdx.cs410J.dion;
 
-import edu.pdx.cs410J.web.HttpRequestHelper;
+import edu.pdx.cs410J.dion.AppointmentBookRestClient;
+import edu.pdx.cs410J.dion.Messages;
+import edu.pdx.cs410J.web.HttpRequestHelper.Response;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -27,35 +29,19 @@ public class AppointmentBookRestClientIT {
   }
 
   @Test
-  public void test0RemoveAllDictionaryEntries() throws IOException {
+  public void test0RemoveAllMappings() throws IOException {
     AppointmentBookRestClient client = newAppointmentBookRestClient();
-    client.removeAllDictionaryEntries();
+    Response response = client.removeAllMappings();
+    assertThat(response.getContent(), response.getCode(), equalTo(200));
   }
 
   @Test
-  public void test1EmptyServerContainsNoDictionaryEntries() throws IOException {
+  public void test1EmptyServerContainsNoMappings() throws IOException {
     AppointmentBookRestClient client = newAppointmentBookRestClient();
-    Map<String, String> dictionary = client.getAllDictionaryEntries();
-    assertThat(dictionary.size(), equalTo(0));
-  }
-
-  @Test
-  public void test2DefineOneWord() throws IOException {
-    AppointmentBookRestClient client = newAppointmentBookRestClient();
-    String testWord = "TEST WORD";
-    String testDefinition = "TEST DEFINITION";
-    client.addDictionaryEntry(testWord, testDefinition);
-
-    String definition = client.getDefinition(testWord);
-    assertThat(definition, equalTo(testDefinition));
-  }
-
-  @Test
-  public void test4MissingRequiredParameterReturnsPreconditionFailed() throws IOException {
-    AppointmentBookRestClient client = newAppointmentBookRestClient();
-    HttpRequestHelper.Response response = client.postToMyURL(Map.of());
-    assertThat(response.getContent(), containsString(Messages.missingRequiredParameter("word")));
-    assertThat(response.getCode(), equalTo(HttpURLConnection.HTTP_PRECON_FAILED));
+    Response response = client.getAllKeysAndValues();
+    String content = response.getContent();
+    assertThat(content, response.getCode(), equalTo(200));
+    assertThat(content, containsString(Messages.getMappingCount(0)));
   }
 
 }
