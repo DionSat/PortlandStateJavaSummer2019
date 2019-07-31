@@ -48,9 +48,35 @@ public class AppointmentBookServlet extends HttpServlet
             }
         } else if(owner != null && beginTime == null && endTime == null) {
             appointmentBook = data.get(owner);
-            appointmentBookPrint(owner, appointmentBook, response);
+            PrintWriter pw = response.getWriter();
+            if(data.get(owner) != null) {
+                pw.println();
+                pw.println(String.format("Owner Name: %s \n", owner));
+                List<Appointment> appointmentList = data.get(owner).getAppointments();
+                boolean foundSomthing = false;
+                for(Appointment app : appointmentList) {
+                    foundSomthing = true;
+                    pw.println(Messages.printAppointment(app));
+                }
+                if (!foundSomthing) {
+                    pw.println("No Appointments found within " + owner + " AppointmentBook." );
+                }
+            } else {
+                pw.println("This owner doesn't have a AppointmentBook currently.");
+            }
+
+            pw.flush();
+
         } else {
-            writeAllMappings(response);
+            PrintWriter pw = response.getWriter();
+            pw.println(String.format( "This owner doesn't have a AppointmentBook currently.", data.size()));
+
+            for (Map.Entry<String, AppointmentBook> entry : this.data.entrySet()) {
+                pw.println(String.format("  %s -> %s", entry.getKey(), entry.getValue().toString()));
+            }
+
+            pw.flush();
+
         }
     }
 
@@ -99,27 +125,80 @@ public class AppointmentBookServlet extends HttpServlet
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-        response.setContentType( "text/plain" );
+        response.setContentType("text/plain");
 
-        String word = getParameter(WORD_PARAMETER, request );
-        if (word == null) {
-            missingRequiredParameter(response, WORD_PARAMETER);
-            return;
-        }
+        String parameter = "owner";
+        String owner = getRequiredParameter(request, response, parameter);
+        if (owner == null) return;
 
-        String definition = getParameter(DEFINITION_PARAMETER, request );
-        if ( definition == null) {
-            missingRequiredParameter( response, DEFINITION_PARAMETER );
-            return;
-        }
+        String description = getRequiredParameter(request, response, "description");
+        if (description == null) return;
 
-        this.dictionary.put(word, definition);
+        String beginTime = getRequiredParameter(request, response, "beginTime");
+        if (beginTime == null) return;
 
+        String endTime = getRequiredParameter(request, response, "endTime");
+        if (endTime == null) return;
+
+        //Creat appointments and add it to the appointmentBook
         PrintWriter pw = response.getWriter();
-        pw.println(Messages.definedWordAs(word, definition));
+
+        if(data != null && data.get(owner) != null) {
+            appointmentBook = data.get(owner);
+            appointmentBook.addAppointment(new Appointment(description, beginTime, endTime));
+            data.put(owner, appointmentBook);
+
+            pw.print("\n\nAdded the below appointment to ");
+            pw.print(owner);
+            pw.println("'s stored AppointmentBook");
+
+        } else {
+            appointmentBook = new AppointmentBook(owner);
+            appointment = new Appointment(description, beginTime, endTime);
+            appointmentBook.addAppointment(appointment);
+            data.put(owner, appointmentBook);
+
+            pw.print("\n\nNew appointment for: ");
+            pw.println(owner);
+
+        }
+
+        pw.println("-------------------------------------");
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date beginDateTime = null;
+        Date endDateTime = null;
+
+        try {
+            beginDateTime = df.parse(appointment.getBeginTimeString());
+        } catch (ParseException e) {
+            System.out.println("Incorrect begin date");
+        }
+        try {
+            endDateTime = df.parse(appointment.getEndTimeString());
+        } catch (ParseException e) {
+            System.out.println("Incorrect end date");
+        }
+
+        int duration = (int) ((endDateTime.getTime() - beginDateTime.getTime())
+                / (1000*60));
+
+        System.out.println(String.format( "Appointment with description: %s \nFrom: %s to %s \nDuration: %d\n",
+                appointment.getDescription(), appointment.getBeginTimeString(),
+                appointment.getEndTimeString(), duration));
+        pw.println();
+
         pw.flush();
 
         response.setStatus( HttpServletResponse.SC_OK);
+    }
+
+    private String getRequiredParameter(HttpServletRequest request, HttpServletResponse response, String parameter) throws IOException {
+        String value = getParameter(parameter, request);
+        if (value == null) {
+            missingRequiredParameter(response, parameter);
+            return null;
+        }
+        return value;
     }
 
     /**
@@ -134,7 +213,7 @@ public class AppointmentBookServlet extends HttpServlet
         this.data.clear();
 
         PrintWriter pw = response.getWriter();
-        pw.println(Messages.allDictionaryEntriesDeleted());
+        pw.println("All mappings have been deleted");
         pw.flush();
 
         response.setStatus(HttpServletResponse.SC_OK);
@@ -154,40 +233,6 @@ public class AppointmentBookServlet extends HttpServlet
     }
 
     /**
-     * Writes the definition of the given word to the HTTP response.
-     *
-     * The text of the message is formatted with
-     * {@link Messages#formatDictionaryEntry(String, String)}
-     */
-    private void writeDefinition(String word, HttpServletResponse response ) throws IOException
-    {
-        String definition = this.dictionary.get(word);
-
-        PrintWriter pw = response.getWriter();
-        pw.println(Messages.formatDictionaryEntry(word, definition));
-
-        pw.flush();
-
-        response.setStatus( HttpServletResponse.SC_OK );
-    }
-
-    /**
-     * Writes all of the dictionary entries to the HTTP response.
-     *
-     * The text of the message is formatted with
-     * {@link Messages#formatDictionaryEntry(String, String)}
-     */
-    private void writeAllDictionaryEntries(HttpServletResponse response ) throws IOException
-    {
-        PrintWriter pw = response.getWriter();
-        Messages.formatDictionaryEntries(pw, dictionary);
-
-        pw.flush();
-
-        response.setStatus( HttpServletResponse.SC_OK );
-    }
-
-    /**
      * Returns the value of the HTTP request parameter with the given name.
      *
      * @return <code>null</code> if the value of the parameter is
@@ -201,10 +246,5 @@ public class AppointmentBookServlet extends HttpServlet
       } else {
         return value;
       }
-    }
-
-    @VisibleForTesting
-    String getDefinition(String word) {
-        return this.dictionary.get(word);
     }
 }
