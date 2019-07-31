@@ -8,7 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,10 +22,9 @@ import java.util.Map;
  */
 public class AppointmentBookServlet extends HttpServlet
 {
-    static final String WORD_PARAMETER = "word";
-    static final String DEFINITION_PARAMETER = "definition";
-
-    private final Map<String, String> dictionary = new HashMap<>();
+    private final Map<String, AppointmentBook> data = new HashMap<>();
+    private AppointmentBook appointmentBook;
+    private Appointment appointment;
 
     /**
      * Handles an HTTP GET request from a client by writing the definition of the
@@ -34,13 +37,58 @@ public class AppointmentBookServlet extends HttpServlet
     {
         response.setContentType( "text/plain" );
 
-        String word = getParameter( WORD_PARAMETER, request );
-        if (word != null) {
-            writeDefinition(word, response);
-
+        String owner = getParameter("owner", request);
+        String beginTime = getParameter("beginTime", request);
+        String endTime = getParameter("endTime", request);
+        if(owner != null && beginTime != null && endTime != null) {
+            try {
+                searchAndPrint(owner, beginTime, endTime, response);
+            } catch (ParseException e) {
+                System.out.println("Issue while searching.");
+            }
+        } else if(owner != null && beginTime == null && endTime == null) {
+            appointmentBook = data.get(owner);
+            appointmentBookPrint(owner, appointmentBook, response);
         } else {
-            writeAllDictionaryEntries(response);
+            writeAllMappings(response);
         }
+    }
+
+    private void searchAndPrint(String owner, String beginTime, String endTime, HttpServletResponse response) throws ParseException, IOException {
+
+        PrintWriter pw = response.getWriter();
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date beginDateTime = format.parse(beginTime);
+        Date endDateTime = format.parse(endTime);
+
+        if(data.get(owner) != null) {
+            List<Appointment> appointmentList = data.get(owner).getAppointments();
+            boolean foundFlag = false;
+            boolean printFlag = false;
+
+            for(Appointment app : appointmentList) {
+                Date appBegin = format.parse(app.getBeginTimeString());
+                Date appEnd = format.parse(app.getEndTimeString());
+                if(appBegin.compareTo(beginDateTime) >= 0 && appEnd.compareTo(endDateTime) <= 0) {
+                    if(!printFlag){
+                        pw.println("\n- Appointment's Found -");
+                        pw.println("--------------------------------------------");
+                        printFlag = true;
+                    }
+                    foundFlag = true;
+                    pw.println(Messages.printAppointment(app));
+                }
+            }
+            if (!foundFlag) {
+                pw.println("No Appointments found within " + owner + " AppointmentBook.");
+            }
+        } else {
+            pw.println("owner AppointmentBook not found.");
+        }
+
+        pw.flush();
+
+        response.setStatus( HttpServletResponse.SC_OK);
     }
 
     /**
@@ -83,7 +131,7 @@ public class AppointmentBookServlet extends HttpServlet
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
 
-        this.dictionary.clear();
+        this.data.clear();
 
         PrintWriter pw = response.getWriter();
         pw.println(Messages.allDictionaryEntriesDeleted());

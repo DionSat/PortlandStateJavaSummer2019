@@ -1,6 +1,9 @@
 package edu.pdx.cs410J.dion;
 
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -85,5 +88,29 @@ public class Messages
         }
 
         return map;
+    }
+
+    public  static String printAppointment ( Appointment aAppointment) {
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+        Date beginDateTime = null;
+        Date endDateTime = null;
+
+        try {
+            beginDateTime = df.parse(aAppointment.getBeginTimeString());
+        } catch (ParseException e) {
+            System.out.println("Incorrect begin date");
+        }
+        try {
+            endDateTime = df.parse(aAppointment.getEndTimeString());
+        } catch (ParseException e) {
+            System.out.println("Incorrect end date");
+        }
+
+        int duration = (int) ((endDateTime.getTime() - beginDateTime.getTime())
+                / (1000*60));
+
+        return String.format( "Appointment with description: %s \nFrom: %s to %s \nDuration: %d\n",
+                aAppointment.getDescription(), aAppointment.getBeginTimeString(),
+                aAppointment.getEndTimeString(), duration);
     }
 }
