@@ -95,7 +95,9 @@ public class AppointmentBookRestClient extends HttpRequestHelper {
             + "&beginTime=" + URLEncoder.encode(newBeginTime, "UTF-8")
             + "&endTime=" + URLEncoder.encode(newEndTime, "UTF-8");
 
-    return get(this.url, Map.of());
+    return get(this.url, Map.of("owner", newOwner,
+            "beginTime", newBeginTime,
+            "endTime", newEndTime));
   }
 
 
