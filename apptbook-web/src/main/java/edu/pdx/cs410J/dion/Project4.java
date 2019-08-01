@@ -31,6 +31,7 @@ public class Project4 {
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         printFlag = checkPrintOption(args);
         readMeFlag = checkReadMeFileOption(args);
+        searchFlag = checkSearchOption(args);
 
         if(readMeFlag) {
             printReadme();
@@ -40,15 +41,15 @@ public class Project4 {
         try {
             beginDateTime = format.parse(cmdArg[4]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println("Invalid begin date/time format");
         }
         try {
             endDateTime = format.parse(cmdArg[5]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.out.println("Invalid end date/time format");
         }
         if(!isValidDateRange(beginDateTime, endDateTime, validDate)) {
-            System.err.println("Dates are invalid!");
+            System.err.println("Dates are invalid ranges!");
             System.exit(3);
         }
 
@@ -244,6 +245,7 @@ public class Project4 {
         boolean print = false;
         boolean portFlag = false;
         boolean hostFlag = false;
+        boolean searchFlag = false;
 
     /*
     Check if the command line argument is empty in which case print an error message and exit
@@ -277,6 +279,10 @@ public class Project4 {
                 portString = arg;
             }
 
+            else if(arg.startsWith("-search")) {
+                searchFlag = true;
+            }
+
             else if (arg.startsWith("-print") && !print) {
                 print = true;
 
@@ -292,21 +298,14 @@ public class Project4 {
             }
 
             else if(descriptionFlag == false) {
-                if(isValidDate(arg) || arg.contains("/")) {
-                    if(description == null) {
-                        description = null;
-                        break;
-                    }
-                    else {
-                        descriptionFlag = true;
-                        startDate = arg;
-                    }
+                if (isValidDate(arg) || arg.contains("/")) {
+                    descriptionFlag = true;
+                    startDate = arg;
                 }
-                if(descriptionTrigger == false) {
+                if (descriptionTrigger == false) {
                     description = arg;
                     descriptionTrigger = true;
-                }
-                else if(!descriptionFlag) {
+                } else if (!descriptionFlag) {
                     description += " " + arg;
                 }
             }
@@ -510,6 +509,18 @@ public class Project4 {
             }
         }
         return flag;
+    }
+
+    private static boolean checkSearchOption(String[] args) {
+        boolean print = false;
+        for (String arg : args) {
+            //look for print option
+            if (arg.startsWith("-search")) {
+                print = true;
+                break;
+            }
+        }
+        return print;
     }
 
     /**

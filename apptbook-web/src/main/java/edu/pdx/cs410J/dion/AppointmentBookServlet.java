@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This servlet ultimately provides a REST API for working with an
@@ -23,6 +23,7 @@ import java.util.Map;
 public class AppointmentBookServlet extends HttpServlet
 {
     private final Map<String, AppointmentBook> data = new HashMap<>();
+    private ArrayList<AppointmentBook> appointmentBooks = new ArrayList<>();
     private AppointmentBook appointmentBook;
     private Appointment appointment;
 
@@ -38,8 +39,17 @@ public class AppointmentBookServlet extends HttpServlet
         response.setContentType( "text/plain" );
 
         String owner = getParameter("owner", request);
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+        String fullUrl = requestURL + "?" + queryString;
+        String decodedUrl = URLDecoder.decode(fullUrl);
+        String decodedQueryString = decodedUrl.substring(decodedUrl.lastIndexOf("?") + 1);
+        PrettyPrinter pretty = new PrettyPrinter("apptbook.txt");
+        PrintWriter pw = response.getWriter();
+
         String beginTime = getParameter("beginTime", request);
         String endTime = getParameter("endTime", request);
+
         if(owner != null && beginTime != null && endTime != null) {
             try {
                 searchAndPrint(owner, beginTime, endTime, response);
@@ -64,7 +74,10 @@ public class AppointmentBookServlet extends HttpServlet
             }
 
             else {
-                pw.println("This owner doesn't have a AppointmentBook currently.");
+                pw.println("The owner parameter must be specified.");
+                pw.flush();
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
             }
 
             pw.flush();
@@ -81,6 +94,67 @@ public class AppointmentBookServlet extends HttpServlet
 
         }
     }
+
+    /**
+     * Allows viewing of all appointments for a specified owner.
+     * @param request - The request made by the client.
+     * @param response - The response to be sent back to the client.
+     * @throws ServletException - Thrown when the server encounters an error.
+     * @throws IOException - Thrown when the server encounters an IO error.
+     */
+    protected void viewAllAppointments(HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+
+        response.setContentType( "text/plain" );
+
+        AppointmentBook currentAppointmentBook = null;
+        String owner = request.getParameter("owner");
+        PrettyPrinter pretty = new PrettyPrinter("apptbook.txt");
+        PrintWriter pw = response.getWriter();
+
+        // Make sure owner is specified in the parameters.
+        if(owner == null) {
+            pw.println("The owner parameter must be specified.");
+            pw.flush();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Let's try to find an appointment book that
+        for(AppointmentBook apptBook : appointmentBook) {
+
+            if(apptBook.getOwnerName().equals(owner)) {
+                currentAppointmentBook = apptBook;
+            }
+        }
+
+        // No appointment book was found, nothing we can do
+        // in a GET request.
+        if(currentAppointmentBook == null) {
+            pw.println("No appointment book found for " + owner);
+            pw.flush();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Dump the appointment book we found to a file,
+        // then read it back and send it back to the user
+        // as text.
+        pretty.dump(currentAppointmentBook);
+        byte[] appointments = Files.readAllBytes(Paths.get("apptbook.txt"));
+        String apptBook = new String(appointments);
+
+        if (currentAppointmentBook.getAppointments().size() > 0){
+            pw.println(apptBook);
+        }
+        else {
+            pw.println("No appointments found.");
+        }
+
+        pw.flush();
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+
 
     private void searchAndPrint(String owner, String beginTime, String endTime, HttpServletResponse response) throws ParseException, IOException {
 

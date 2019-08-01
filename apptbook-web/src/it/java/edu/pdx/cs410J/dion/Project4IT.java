@@ -1,7 +1,6 @@
 package edu.pdx.cs410J.dion;
 
 import edu.pdx.cs410J.InvokeMainTestCase;
-import edu.pdx.cs410J.dion.Project4;
 import edu.pdx.cs410J.web.HttpRequestHelper;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;

@@ -29,9 +29,14 @@ public class AppointmentBookRestClient extends HttpRequestHelper {
     this.url = String.format("http://%s:%d/%s/%s", hostName, port, WEB_APP, SERVLET);
   }
 
+  /**
+   * Returns all keys and values from the server
+   * @return
+   * @throws IOException
+   */
   public Response getAllKeysAndValues() throws IOException
   {
-    return get(this.url, Map.of());
+    return get(this.url,Map.of());
   }
 
 
