@@ -1,13 +1,10 @@
 package edu.pdx.cs410J.dion;
 
-import com.google.common.annotations.VisibleForTesting;
 import edu.pdx.cs410J.web.HttpRequestHelper;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
-
-import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * A helper class for accessing the rest client
@@ -37,6 +34,16 @@ public class AppointmentBookRestClient extends HttpRequestHelper {
   public Response getAllKeysAndValues() throws IOException
   {
     return get(this.url,Map.of());
+  }
+
+  /**
+   * Function to retrieve all appointments related to owner from server
+   * @param owner
+   * @return
+   * @throws IOException
+   */
+  public Response prettyPrintAppointmentBook(String owner) throws IOException {
+    return get(this.url, Map.of("owner", owner));
   }
 
 

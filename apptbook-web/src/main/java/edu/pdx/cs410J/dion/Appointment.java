@@ -111,36 +111,25 @@ public class Appointment extends AbstractAppointment implements Comparable<Appoi
      * and checked against each other according to time.
      * @param o
      *        The left assignment object compared against.
-     * @return return 1 or 0
+     * @return return 1, 0 or -1
      */
     @Override
     public int compareTo(Appointment o) {
-        try {
-            if (this.beginDate == null) {
-                throw new NullPointerException("time and date empty!");
+        int order = 0;
+        if(o != null && beginDate != null) {
+            if (beginDate.before(o.getBeginTime()))
+                order = -1;
+            else if (beginDate.after(o.getBeginTime()))
+                order = 1;
+            else if (beginDate.before(o.getEndTime()))
+                order = -1;
+            else if (beginDate.after(o.getEndTime()))
+                order = 1;
+            else {
+                order = description.compareTo(o.getDescription());
             }
-            if (this.endDate == null) {
-                throw new NullPointerException("time and date empty");
-            }
-            long difference = this.beginDate.getTime() - o.endDate.getTime();
-
-            if (difference > 0) {
-                return 1;
-            }
-
-            if (difference < 0) {
-                return -1;
-            }
-
-            //they are equal
-            if (difference == 0 ) {
-                return this.description.compareTo(o.description);
-            }
-
-        } catch (NullPointerException e) {
-            System.out.println("Found a Null Pointer in compareTo");
         }
-        return 0;
+        return order;
     }
 
 }

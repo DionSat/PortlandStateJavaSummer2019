@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * The main class for the CS410J appointment book Project.
  * This class handles and implements the command argument parsing and options
  * @author Dion Satcher
- * @version 2.1 7/24/2019
+ * @version 1.0 8/02/2019
  */
 public class Project4 {
     public static final String MISSING_ARGS = "Missing command line arguments";
@@ -27,34 +27,43 @@ public class Project4 {
         boolean validDate = false;
         boolean searchFlag = false;
         boolean serverFlag = true;
+        boolean printAll = false;
+        String[] cmdArg = new String[6];
+        String stringBegin = null;
+        String stringEnd = null;
 
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
         printFlag = checkPrintOption(args);
         readMeFlag = checkReadMeFileOption(args);
         searchFlag = checkSearchOption(args);
+        printAll = checkPrintAllOption(args);
 
         if(readMeFlag) {
             printReadme();
             System.exit(2);
         }
-        String[] cmdArg = parseText(args);
-        try {
-            beginDateTime = format.parse(cmdArg[4]);
-        } catch (ParseException e) {
-            System.out.println("Invalid begin date/time format");
-        }
-        try {
-            endDateTime = format.parse(cmdArg[5]);
-        } catch (ParseException e) {
-            System.out.println("Invalid end date/time format");
-        }
-        if(!isValidDateRange(beginDateTime, endDateTime, validDate)) {
-            System.err.println("Dates are invalid ranges!");
-            System.exit(3);
-        }
 
-        String stringBegin = format.format(beginDateTime);
-        String stringEnd = format.format(endDateTime);
+        cmdArg = parseText(args);
+
+        if(!printAll) {
+            try {
+                beginDateTime = format.parse(cmdArg[4]);
+            } catch (ParseException e) {
+                System.out.println("Invalid begin date/time format");
+            }
+            try {
+                endDateTime = format.parse(cmdArg[5]);
+            } catch (ParseException e) {
+                System.out.println("Invalid end date/time format");
+            }
+            if (!isValidDateRange(beginDateTime, endDateTime, validDate)) {
+                System.err.println("Dates are invalid ranges!");
+                System.exit(3);
+            }
+
+            stringBegin = format.format(beginDateTime);
+            stringEnd = format.format(endDateTime);
+        }
 
         Appointment appointment = new Appointment(cmdArg[3], beginDateTime, endDateTime);
         AppointmentBook appointmentBook = new AppointmentBook(cmdArg[2]);
@@ -72,16 +81,26 @@ public class Project4 {
 
         HttpRequestHelper.Response response = null;
 
-        if (searchFlag) {
-            try {
-                response = client.searchAppointments(cmdArg[2], stringBegin, stringEnd);
-            } catch (IOException ex) {
-                System.out.println("Web connection issue");
-                serverFlag = false;
+        if(!printAll) {
+            if (searchFlag) {
+                try {
+                    response = client.searchAppointments(cmdArg[2], stringBegin, stringEnd);
+                } catch (IOException ex) {
+                    System.out.println("Web connection issue");
+                    serverFlag = false;
+                }
+            } else {
+                try {
+                    response = client.addAppointment(cmdArg[2], cmdArg[3], stringBegin, stringEnd);
+                } catch (IOException ex) {
+                    System.out.println("Web connection issue");
+                    serverFlag = false;
+                }
             }
-        } else {
+        }
+        else {
             try {
-                response = client.addAppointment(cmdArg[2], cmdArg[3], stringBegin, stringEnd);
+                response = client.prettyPrintAppointmentBook(cmdArg[2]);
             } catch (IOException ex) {
                 System.out.println("Web connection issue");
                 serverFlag = false;
@@ -166,11 +185,11 @@ public class Project4 {
                 "beginTime - (date AND time) When the appt begins (12-hour time)\n" +
                 "endTime - (date AND time) When the appt ends (12-hour time)\n" +
                 "  options are (options may appear in any order):\n" +
-                "    -pretty                  file Pretty print the appointment book to\n" +
-                "                             a text file or standard out (file -)\n" +
-                "    -print                   Prints a description of the new appointment\n" +
-                "    -README                  Prints a README for this project and exits\n" +
-                "    -textFile                Where to read/write the appointment book\n" +
+                "       -host           hostname Host computer on which the server runs\n" +
+                "       -port           port Port on which the server is listening\n" +
+                "       -search         Appointments should be searched for\n" +
+                "       -print          Prints a description of the new appointment\n" +
+                "       -README         Prints a README for this project and exits\n" +
                 "  Date and time should be in the format: mm/dd/yyyy hh:mm am/pm (or mm/dd/yy hh:mm am/pm)\n" +
                 "\n***END OF README***\n");
     }
@@ -246,6 +265,7 @@ public class Project4 {
         boolean portFlag = false;
         boolean hostFlag = false;
         boolean searchFlag = false;
+        boolean printAll = false;
 
     /*
     Check if the command line argument is empty in which case print an error message and exit
@@ -261,6 +281,8 @@ public class Project4 {
             System.err.println("Missing command line arguments!");
             System.exit(1);
         }
+
+        printAll = checkPrintAllOption(args);
 
         for (String arg : args) {
             if (arg.startsWith("-host") && !hostFlag) {
@@ -341,7 +363,9 @@ public class Project4 {
 
 
         if(!exitFlag) {
-            checkCommandArgument(hostName, portString, owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
+            if(!printAll) {
+                checkCommandArgument(hostName, portString, owner, description, startDate, startTime, endDate, endTime, startDay, endDay);
+            }
 
             commandArg[0] = hostName;
             commandArg[1] = portString;
@@ -511,6 +535,69 @@ public class Project4 {
         return flag;
     }
 
+    /**
+     * This function checks if there is only a port, host and name listed in arguments
+     * to check if they want to print all appointments
+     * @param args
+     *        The command line argument
+     * @return
+     */
+    private static boolean checkPrintAllOption(String[] args) {
+        boolean flag = true;
+        String hostName = null;
+        String portString = null;
+        String owner = null;
+        boolean exitFlag = false;
+        boolean print = false;
+        boolean portFlag = false;
+        boolean hostFlag = false;
+        boolean searchFlag = false;
+        for(String arg : args) {
+            if (arg.startsWith("-host") && !hostFlag) {
+                hostFlag = true;
+            }
+
+            else if (hostFlag && hostName == null) {
+                hostName = arg;
+            }
+
+            else if (arg.startsWith("-port") && !portFlag) {
+                portFlag = true;
+            }
+
+            else if (portFlag && portString == null) {
+                portString = arg;
+            }
+
+            else if (arg.startsWith("-search")) {
+                searchFlag = true;
+            }
+
+            else if (arg.startsWith("-print") && !print) {
+                print = true;
+
+            }
+
+            else if (owner == null) {
+                if (isNumeric(arg)) {
+                    System.err.println("Invalid name type!");
+                    System.exit(3);
+                }
+                owner = arg;
+            }
+            else {
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * This function looks for the -search option in the command argument
+     * @param args
+     *        The whole command line argument
+     * @return  the boolean value flag as true, if README is present or false if not
+     */
     private static boolean checkSearchOption(String[] args) {
         boolean print = false;
         for (String arg : args) {
