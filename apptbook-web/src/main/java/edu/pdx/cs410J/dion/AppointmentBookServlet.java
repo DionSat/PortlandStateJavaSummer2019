@@ -36,13 +36,7 @@ public class AppointmentBookServlet extends HttpServlet
         response.setContentType( "text/plain" );
 
         String owner = getParameter("owner", request);
-        StringBuffer requestURL = request.getRequestURL();
-        String queryString = request.getQueryString();
-        String fullUrl = requestURL + "?" + queryString;
-        String decodedUrl = URLDecoder.decode(fullUrl);
-        String decodedQueryString = decodedUrl.substring(decodedUrl.lastIndexOf("?") + 1);
         PrintWriter pw = response.getWriter();
-        boolean viewAll = decodedQueryString.matches("^owner=(\\w|[+])+$");
 
         String beginTime = getParameter("beginTime", request);
         String endTime = getParameter("endTime", request);
