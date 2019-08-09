@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="112dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="595dp"
+            android:gravity="top"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/heading"
+                android:layout_width="238dp"
+                android:layout_height="69dp"
+                android:layout_marginEnd="89dp"
+                android:layout_marginRight="89dp"
+                android:layout_marginBottom="674dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="Project 5 Appointment Book"
+                android:textColor="#1A1818"
+                android:textSize="24sp"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="101dp"
+                android:layout_height="103dp"
+                android:layout_weight="5"
+                android:adjustViewBounds="false"
+                android:contentDescription="appointment book"
+                android:visibility="visible"
+                app:srcCompat="@drawable/littlebook" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="175dp"
+            android:layout_height="31dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="236dp"
+            android:layout_marginRight="236dp"
+            android:layout_marginBottom="534dp"
+            android:text="Get All Appointments"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/getAllButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="94dp"
+            android:layout_marginRight="94dp"
+            android:layout_marginBottom="524dp"
+            android:text="Get All"
+            android:textAllCaps="false"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/ownerInput"
+            android:layout_width="165dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="56dp"
+            android:layout_marginRight="56dp"
+            android:layout_marginBottom="438dp"
+            android:background="@drawable/rounded_edittext"
+            android:hint=" Enter the Owner Name."
+            android:inputType="textCapCharacters|textMultiLine"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/getOwnerAppointmentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="244dp"
+            android:layout_marginRight="244dp"
+            android:layout_marginBottom="429dp"
+            android:text="Get By Owner Name" />
+    </RelativeLayout>
+
+</LinearLayout>
