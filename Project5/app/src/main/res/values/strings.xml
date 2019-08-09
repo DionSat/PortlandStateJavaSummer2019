@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">First Application</string>
+    <string name="Appointment_Book_Application">Appointment Book Application</string>
+    <string name="appointment_book">appointment book</string>
+    <string name="Get_All_Appointments">Get All Appointments</string>
+    <string name="Get_By_Owner">Get By Owner</string>
+    <string name="Create_An_Appointment">Create An Appointment</string>
+    <string name="Enter_Owner_Name">Enter Owner Name</string>
+    <string name="Enter_Start_Time">Enter Start Time</string>
+    <string name="Enter_End_Time">Enter End Time</string>
+    <string name="Enter_Description">Enter Description</string>
 </resources>

@@ -1,102 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="112dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="595dp"
-            android:gravity="top"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/heading"
-                android:layout_width="238dp"
-                android:layout_height="69dp"
-                android:layout_marginEnd="89dp"
-                android:layout_marginRight="89dp"
-                android:layout_marginBottom="674dp"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="Project 5 Appointment Book"
-                android:textColor="#1A1818"
-                android:textSize="24sp"
-                android:visibility="visible" />
+            android:layout_height="177dp"
+            android:layout_weight="0"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="101dp"
-                android:layout_height="103dp"
-                android:layout_weight="5"
-                android:adjustViewBounds="false"
-                android:contentDescription="appointment book"
-                android:visibility="visible"
+                android:layout_width="91dp"
+                android:layout_height="105dp"
+                android:layout_weight="0"
+                android:contentDescription="@string/appointment_book"
                 app:srcCompat="@drawable/littlebook" />
+
+            <TextView
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="105dp"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="@string/Appointment_Book_Application"
+                android:textColor="#0A0A0A"
+                android:textSize="24sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="175dp"
-            android:layout_height="31dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="236dp"
-            android:layout_marginRight="236dp"
-            android:layout_marginBottom="534dp"
-            android:text="Get All Appointments"
-            android:textSize="18sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
-        <Button
-            android:id="@+id/getAllButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="94dp"
-            android:layout_marginRight="94dp"
-            android:layout_marginBottom="524dp"
-            android:text="Get All"
-            android:textAllCaps="false"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/AppoinmentBookHomescreen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:text="TextView"
+                android:textSize="18sp" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/ownerInput"
-            android:layout_width="165dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="56dp"
-            android:layout_marginRight="56dp"
-            android:layout_marginBottom="438dp"
-            android:background="@drawable/rounded_edittext"
-            android:hint=" Enter the Owner Name."
-            android:inputType="textCapCharacters|textMultiLine"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="97dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/getOwnerAppointmentButton"
-            android:layout_width="wrap_content"
-            android:layout_height="37dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="244dp"
-            android:layout_marginRight="244dp"
-            android:layout_marginBottom="429dp"
-            android:text="Get By Owner Name" />
-    </RelativeLayout>
+            <Button
+                android:id="@+id/button"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:text="@string/Get_All_Appointments" />
 
-</LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="142dp"
+                android:layout_height="36dp"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_Owner_Name"
+                android:text="@string/Get_By_Owner" />
+
+            <EditText
+                android:id="@+id/getByOwnerEntered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_Owner_Name"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_weight="0"
+                android:text="@string/Create_An_Appointment" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ownerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_Owner_Name"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/descriptionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_Description"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/startDateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_Start_Time"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/endDateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:contentDescription="@string/Enter_End_Time"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
