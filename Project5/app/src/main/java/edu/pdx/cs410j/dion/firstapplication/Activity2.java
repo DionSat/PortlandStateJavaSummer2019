@@ -21,11 +21,14 @@ public class Activity2 extends AppCompatActivity {
         tv = findViewById(R.id.result_display);
 
         st = getIntent().getExtras().getString("Value");
+        String temp = tv.getText().toString();
         tv.setText(st);
     }
 
     @Override
     public void onBackPressed() {
+        tv = findViewById(R.id.result_display);
+        tv.setText("");
         finish();
     }
 }

@@ -12,7 +12,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="177dp"
+            android:layout_height="176dp"
             android:layout_weight="0"
             android:orientation="horizontal">
 
@@ -20,7 +20,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="91dp"
                 android:layout_height="105dp"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:contentDescription="@string/appointment_book"
                 app:srcCompat="@drawable/littlebook" />
 
@@ -28,11 +28,19 @@
                 android:id="@+id/header"
                 android:layout_width="wrap_content"
                 android:layout_height="105dp"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/Appointment_Book_Application"
                 android:textColor="#0A0A0A"
                 android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/help_button"
+                android:layout_width="76dp"
+                android:layout_height="38dp"
+                android:layout_weight="0"
+                android:text="@string/Help" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -48,6 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0"
+                android:gravity="center"
                 android:text="TextView"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -89,7 +98,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0"
-                android:background="@drawable/edit_text_border"
                 android:ems="10"
                 android:inputType="textPersonName" />
 
@@ -99,7 +107,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0"
-                android:background="@drawable/edit_text_border"
                 android:ems="10"
                 android:inputType="textPersonName" />
         </LinearLayout>
