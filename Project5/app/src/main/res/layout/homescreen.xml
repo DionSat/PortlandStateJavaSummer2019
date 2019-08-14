@@ -54,15 +54,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="97dp"
+            android:layout_height="wrap_content"
             android:layout_weight="0"
             android:gravity="center"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button"
-                android:layout_width="156dp"
-                android:layout_height="wrap_content"
+                android:id="@+id/getAllButton"
+                android:layout_width="164dp"
+                android:layout_height="34dp"
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:text="@string/Get_All_Appointments" />
@@ -71,13 +71,48 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="90dp"
+            android:layout_weight="0"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="103dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:text="@string/Search" />
+
+            <EditText
+                android:id="@+id/beginDateRangeText"
+                android:layout_width="131dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:background="@drawable/edit_text_border"
+                android:ems="10"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/endDateRangeText"
+                android:layout_width="131dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:background="@drawable/edit_text_border"
+                android:ems="10"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="97dp"
             android:layout_weight="0"
             android:gravity="center"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/getAllByOwnerButton"
                 android:layout_width="142dp"
                 android:layout_height="36dp"
                 android:layout_weight="0"
@@ -102,7 +137,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/createButton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_weight="0"
@@ -162,7 +197,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="61dp"
             android:layout_weight="0"
             android:gravity="center"
             android:orientation="horizontal">

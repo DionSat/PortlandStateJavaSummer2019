@@ -3,6 +3,9 @@ package edu.pdx.cs410j.dion.firstapplication;
 import java.io.*;
 import java.io.File;
 import java.util.regex.Pattern;
+import android.content.Context;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * This class will handle parsing/reading a text file specified on the command line argument.

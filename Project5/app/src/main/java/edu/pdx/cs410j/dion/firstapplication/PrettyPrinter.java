@@ -106,8 +106,6 @@ public class PrettyPrinter implements AppointmentBookDumper {
         Date endDate = null;
         AppointmentBook apptBook = (AppointmentBook)abstractAppointmentBook;
         appointments = apptBook.getAppointments();
-        //BufferedWriter fos;
-        //fos = new BufferedWriter(new FileWriter(filename));
         os.println(apptBook.getOwnerName());
 
         os.println("====== Appointment Book ======\n\nOwner Name: ");

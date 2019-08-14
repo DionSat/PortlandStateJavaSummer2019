@@ -1,15 +1,15 @@
 package edu.pdx.cs410j.dion.firstapplication;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,52 +18,151 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String FILE_NAME = "appointment.txt";
-    Appointment app;
+    private List<String> FILE_NAME = new ArrayList<>();
     AppointmentBook appBk;
-    ArrayList<AppointmentBook> appBkList;
     EditText mOwnerText;
+    EditText mOwnerButtonText;
     EditText mDescriptionText;
     EditText mStartDateText;
     EditText mEndDateText;
+    Button getButton;
+    Button getOwnerButton;
+    Button createAppButton;
+    String st = "";
+    String filenames = "filenames.txt";
+    SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+    Date beginDate = null;
+    Date endDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homescreen);
 
+        getButton = findViewById(R.id.getAllButton);
+        getOwnerButton = findViewById(R.id.getAllByOwnerButton);
+        createAppButton = findViewById(R.id.createButton);
         mOwnerText = findViewById(R.id.ownerText);
         mDescriptionText = findViewById(R.id.descriptionText);
         mStartDateText = findViewById(R.id.startDateText);
         mEndDateText = findViewById(R.id.endDateText);
+        mOwnerButtonText = findViewById(R.id.getByOwnerEntered);
 
-        ArrayList<AppointmentBook> appbkList = load();
-        if(appbkList.size() == 0) {
-            Toast.makeText(this, "Appointment Book Data Empty", Toast.LENGTH_LONG).show();
-        }
+        getButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadFileNames(filenames);
+                Intent intent = new Intent(MainActivity.this, Activity2.class);
+                for(String file : FILE_NAME) {
+                    appBk = load(file);
+                    StringBuilder build = new StringBuilder(appBk.toString());
+                    ArrayList<Appointment> appointments = appBk.getAppointments();
+                    build.append("\n====== Appointment Book ======\n\nOwner Name: ");
+                    build.append(appBk.getOwnerName());
+                    build.append("\n\n------------------------------\nAppointments:\n");
+
+                    for (AbstractAppointment app : appointments) {
+                        try {
+                            beginDate = format.parse(app.getBeginTimeString());
+                        } catch (ParseException e) {
+                            System.out.println("Date format incorrect");
+                        }
+                        try {
+                            endDate = format.parse(app.getEndTimeString());
+                        } catch (ParseException e) {
+                            System.out.println("Date format incorrect");
+                        }
+                        int duration = (int) ((endDate.getTime() - beginDate.getTime()) / (1000 * 60));
+                        build.append("\n Appointment: ");
+                        build.append(app + "\nDuration: " + duration + " minutes.\n\n\n");
+                    }
+                    st += build.toString();
+                }
+                intent.putExtra("Value", st);
+                startActivity(intent);
+            }
+        });
+
+        getOwnerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appBk = load(mOwnerButtonText.getText().toString().trim() + ".txt");
+                Intent i = new Intent(MainActivity.this, Activity2.class);
+                StringBuilder build = new StringBuilder(appBk.toString());
+                ArrayList<Appointment> appointments = appBk.getAppointments();
+                build.append("\n====== Appointment Book ======\n\nOwner Name: ");
+                build.append(appBk.getOwnerName());
+                build.append("\n\n------------------------------\nAppointments:\n");
+
+                for(AbstractAppointment app : appointments) {
+                    try {
+                        beginDate = format.parse(app.getBeginTimeString());
+                    } catch (ParseException e) {
+                        System.out.println("Date format incorrect");
+                    }
+                    try {
+                        endDate = format.parse(app.getEndTimeString());
+                    } catch (ParseException e) {
+                        System.out.println("Date format incorrect");
+                    }
+                    int duration = (int) ((endDate.getTime() - beginDate.getTime()) / (1000*60));
+                    build.append("\n Appointment: ");
+                    build.append(app +"\nDuration: " + duration + " minutes.");
+                }
+                st = build.toString();
+                i.putExtra("Value", st);
+                startActivity(i);
+                //finish();
+                mOwnerButtonText.getText().clear();
+            }
+        });
+
+        createAppButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!checkFile(filenames, mOwnerText.getText().toString() + ".txt")) {
+                    save(mOwnerText.getText().toString() + ".txt");
+                }
+                saveFileNames(mOwnerText.getText().toString().trim() + ".txt");
+                mOwnerText.getText().clear();
+                mDescriptionText.getText().clear();
+                mStartDateText.getText().clear();
+                mEndDateText.getText().clear();
+            }
+        });
     }
 
-    public ArrayList<AppointmentBook> load() {
+    public boolean checkFile(String filename, String compare) {
+        for(String file : FILE_NAME) {
+            if(file.equals(compare)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public AppointmentBook load(String filename) {
+        filename = filename;
         FileInputStream fis = null;
-        ArrayList<AppointmentBook> appbkList = new ArrayList<>();
+        AppointmentBook appbk = null;
 
         try {
-            fis = openFileInput(FILE_NAME);
+            fis = openFileInput(filename);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
-            String owner;
-            String description;
-            String startDate;
-            String endDate;
-            String line = null;
+            String line;
 
-            if(fileExists(this, FILE_NAME)) {
-                appBk = new AppointmentBook("no owner");
+            if(fileExists(this, filename)) {
+                appbk = new AppointmentBook("no owner");
             }
             while ((line = br.readLine()) != null) {
                 String[] app = line.split(";");
@@ -94,11 +193,10 @@ public class MainActivity extends AppCompatActivity {
                     System.err.println("Too many arguments. Malformed!");
                     System.exit(1);
                 }
-                appBk.setOwnerName(app[0]);
+                appbk.setOwnerName(app[0]);
                 if (checkFormat(app[2]) && checkFormat(app[3])) {
                     Appointment appointment = new Appointment(app[1], app[2], app[3]);
-                    appBk.addAppointment(appointment);
-                    appbkList.add(appBk);
+                    appbk.addAppointment(appointment);
                 } else {
                     System.err.println("Date/Time is not in right format in text file! Ex: MM/DD/YYYY hh:mm am/pm");
                     break;
@@ -119,26 +217,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        return appbkList;
+        return appbk;
     }
 
-    public void save() {
+    public void save(String filename) {
+        filename = filename;
         String owner = mOwnerText.getText().toString();
         String description = mDescriptionText.getText().toString();
         String startDate = mStartDateText.getText().toString();
         String endDate = mEndDateText.getText().toString();
+
+        if(description.equals("") || owner.equals("") || startDate.equals("") || endDate.equals("")) {
+            Toast.makeText(this, "Error text field emtpy!", Toast.LENGTH_LONG).show();
+            return;
+        }
         String text = owner + ";" + description + ";" + startDate + ";" + endDate;
         FileOutputStream fos = null;
 
         try {
-            fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
+            fos = openFileOutput(filename, MODE_APPEND);
             fos.write(text.getBytes());
-
-            mOwnerText.getText().clear();
-            mDescriptionText.getText().clear();
-            mStartDateText.getText().clear();
-            mEndDateText.getText().clear();
-            Toast.makeText(this, "Saved to " + getFilesDir() + "/" + FILE_NAME, Toast.LENGTH_LONG).show();
+            fos.write(System.getProperty("line.separator").getBytes());
+            Toast.makeText(this, "Saved to " + getFilesDir() + "/" + filename, Toast.LENGTH_LONG).show();
         } catch (FileNotFoundException e) {
             System.out.println("File Not Found");
         } catch (IOException e) {
@@ -154,6 +254,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void saveFileNames(String filename) {
+        String text = filename;
+        FileOutputStream fos = null;
+
+        try {
+            fos = openFileOutput("filenames.txt", MODE_APPEND);
+            fos.write(text.getBytes());
+            fos.write(System.getProperty("line.separator").getBytes());
+            Toast.makeText(this, "Saved to " + getFilesDir() + "/" + filename, Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void loadFileNames(String filename) {
+        FileInputStream fis = null;
+
+        try {
+            fis = openFileInput(filename);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while((text = br.readLine()) != null) {
+                FILE_NAME.add(text);
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void updateAppointmentHomeScreen(String toThis) {
         TextView textView = (TextView) findViewById(R.id.AppoinmentBookHomescreen);
         textView.setText(toThis);
@@ -166,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
      * @return  returns isValid as true is its in the correct format or false if not.
      */
     private static boolean checkFormat(String dateTime) {
-        String regEx = "^(((0[13578]|1[02])[\\/\\.-](0[1-9]|[12]\\d|3[01])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((0[13456789]|1[012])[\\/\\.-](0[1-9]|[12]\\d|30)[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](0[1-9]|1\\d|2[0-8])[\\/\\.-]((19|[2-9]\\d)\\d{2})\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d)\\s(AM|am|PM|pm))|((02)[\\/\\.-](29)[\\/\\.-]((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\\d))\\s(AM|am|PM|pm))$";
+        String regEx = "^(([0]?[1-9]|1[0-2])/([0-2]?[0-9]|3[0-1])/[1-2]\\d{3})? ?((([0-1]?\\d)|(2[0-3])):[0-5]\\d)?(:[0-5]\\d)? ?(AM|am|PM|pm)?$";
         boolean isValid = false;
         Pattern p = Pattern.compile(regEx);
         if(p.matcher(dateTime).find()) {
