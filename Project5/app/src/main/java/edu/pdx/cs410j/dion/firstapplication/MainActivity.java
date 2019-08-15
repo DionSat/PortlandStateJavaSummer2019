@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     Date beginDate = null;
     Date endDate = null;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,25 @@ public class MainActivity extends AppCompatActivity {
 
         String homescreen = "There are " + FILE_NAME.size() + " AppointmentBook owners in this application currently";
         mAppBkList.setText(homescreen);
+
+        FileOutputStream fos = null;
+        if(!fileExists(this, "filenames.txt")) {
+            try {
+                fos = openFileOutput("filenames.txt", MODE_PRIVATE);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,6 +240,10 @@ public class MainActivity extends AppCompatActivity {
                 mDescriptionText.getText().clear();
                 mStartDateText.getText().clear();
                 mEndDateText.getText().clear();
+                FILE_NAME.clear();
+                loadFileNames(filenames);
+                String homescreen = "There are " + FILE_NAME.size() + " AppointmentBook owners in this application currently";
+                mAppBkList.setText(homescreen);
             }
         });
     }

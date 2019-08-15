@@ -99,7 +99,9 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="Begin Date"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
 
             <EditText
                 android:id="@+id/endDateRangeText"
@@ -108,7 +110,9 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="End Date"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +137,9 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/Enter_Owner_Name"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="@string/Enter_Owner_Name"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
         <LinearLayout
@@ -165,7 +171,9 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/Enter_Owner_Name"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="@string/Enter_Owner_Name"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
         <LinearLayout
@@ -182,7 +190,9 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/Enter_Description"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="@string/Enter_Description"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
         <LinearLayout
@@ -199,7 +209,9 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/Enter_Start_Time"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="@string/Enter_Start_Time"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
         <LinearLayout
@@ -216,7 +228,9 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/Enter_End_Time"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:hint="@string/Enter_End_Time"
+                android:inputType="textPersonName"
+                android:textColor="#5A4C4C" />
         </LinearLayout>
 
     </LinearLayout>
